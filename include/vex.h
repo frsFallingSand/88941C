@@ -1,3 +1,12 @@
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       vex.h                                                     */
+/*    Author:       Vex Robotics                                              */
+/*    Created:      1 Feb 2019                                                */
+/*    Description:  Default header for V5 projects                            */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+//
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,6 +15,8 @@
 #include "v5.h"
 #include "v5_vcs.h"
 
+#include "robot-config.h"
+#include "variable&funtion.h"
 
 #define waitUntil(condition)                                                   \
   do {                                                                         \
@@ -14,3 +25,19 @@
 
 #define repeat(iterations)                                                     \
   for (int iterator = 0; iterator < iterations; iterator++)
+
+
+
+
+// 点结构体
+struct Point {
+    double x, y;
+    Point(double x = 0, double y = 0) : x(x), y(y) {}
+};
+
+
+//位姿结构体
+struct Pose {
+    double x, y, theta;
+    Pose(double x = 0, double y = 0, double theta = 0) : x(x), y(y), theta(theta) {}
+};
