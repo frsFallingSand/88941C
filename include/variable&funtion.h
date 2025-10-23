@@ -33,6 +33,7 @@ extern void move(vex:: directionType dir,float dis,int v);
 extern void linearSmoothStop(vex:: directionType dir,float dis,float Maxspeed,float DecelerationDis,float Minspeed,int targetdeg,double kp);
 extern void moveTime(vex:: directionType dir,double sp,double times);
 extern void Bucket_to_Bridge();
+extern void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp,float Anglekp);
 
 
 

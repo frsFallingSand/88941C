@@ -379,3 +379,107 @@ void pid(double t, double kp, double ki, double kd, double minVolt) {
         wait(20, msec);
     }
 }
+
+/*依托行程轮里程函数
+@targetDist  单位为inch
+
+*/
+float accelerationRate = 0.4;//加速度
+double lastYEncoder;
+void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp,float Anglekp){
+  Controller1.Screen.clearScreen();
+  float currentDist=0;
+  lastYEncoder=0;
+  y.resetPosition();
+  wait(100,msec);
+  float remainingDist = targetDist - currentDist; //总剩余距离
+  float currentSpeed;//启动速度
+  if(remainingDist>=10&&Maxspeed>=20) currentSpeed = 20; //确定启动速度
+  else currentSpeed = Maxspeed;  //最大速度小于启动速度的时候，按Maxspeed
+  while(1){
+    int deg_error = targetAngle - IMU.heading();
+    // 确保误差在-180到180范围内
+    if(deg_error > 180) deg_error -= 360;
+    if(deg_error < -180) deg_error += 360;
+    double currentYEncoder = y.position(degrees);
+    double deltaY = ((currentYEncoder - lastYEncoder) / 360) * (2 * M_PI * 1);
+    currentDist+=deltaY;
+    if(targetDist<=fabs(currentDist)){
+      break;
+    }
+    //加速阶段
+    if(currentSpeed<Maxspeed) currentSpeed+=accelerationRate; //加速
+    remainingDist = targetDist - fabs(currentDist);
+    currentSpeed = pow(remainingDist*DISkp,2)*Maxspeed; 
+    
+    int k = deg_error*Anglekp;
+
+    currentSpeed = fmin(currentSpeed,Maxspeed);
+    currentSpeed = fmax(currentSpeed,minSpeed);
+    L.spin(dir,currentSpeed+k,pct);
+    R.spin(dir,currentSpeed-k,pct);
+    //wait(5,msec);
+    lastYEncoder = currentYEncoder;
+    Brain.Screen.setCursor(5,22);
+    Brain.Screen.print(currentDist);
+  }
+  
+}
+
+#include <cmath>
+#include <algorithm>
+
+/**
+ * @brief 根据当前已行驶路程，计算平滑的目标速度
+ *
+ * @param current_distance  当前已行驶的路程（由里程计获取）
+ * @param total_distance    总目标路程
+ * @param cruise_speed      匀速阶段的目标速度（> 0）
+ * @param max_decel         最大允许减速度（正值，用于计算减速距离）
+ * @return double           平滑后的目标速度
+ */
+double getSmoothTargetVelocity(
+    double current_distance,
+    double total_distance,
+    double cruise_speed,
+    double max_decel)
+{
+    // 安全检查
+    if (cruise_speed <= 0.0 || max_decel <= 0.0 || total_distance <= 0.0) {
+        return 0.0;
+    }
+
+    // 理论所需减速距离（从 cruise_speed 减速到 0，匀减速）
+    double decel_distance = (cruise_speed * cruise_speed) / (2.0 * max_decel);
+
+    // 可选：增加一点安全余量（例如 10%），防止因计算误差刹不住
+    decel_distance *= 1.1;
+
+    // 减速起始位置（不能小于0）
+    double decel_start = std::max(0.0, total_distance - decel_distance);
+
+    // 如果已经到达或超过总路程，停止
+    if (current_distance >= total_distance) {
+        return 0.0;
+    }
+
+    // 还未进入减速段：保持匀速
+    if (current_distance < decel_start) {
+        return cruise_speed;
+    }
+
+    // 进入平滑减速段：使用余弦函数平滑减速到 0
+    double progress = (current_distance - decel_start) / (total_distance - decel_start);
+    progress = std::clamp(progress, 0.0, 1.0); // 确保在 [0, 1] 范围内
+
+    // 余弦平滑：v = v_cruise * (1 + cos(π * t)) / 2
+    // t=0 → v = v_cruise, t=1 → v = 0，且加速度在两端为0
+    double velocity = cruise_speed * (1.0 + std::cos(M_PI * progress)) / 2.0;
+
+    // 确保速度非负
+    return std::max(0.0, velocity);
+}
+
+void test(){
+
+}

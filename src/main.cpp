@@ -129,7 +129,7 @@
 using namespace vex;
 competition Competition;
 
-
+int tes = 0
 
 void pre_auton(void) {
   vexcodeInit();
@@ -149,6 +149,10 @@ int main() {
     wait(50, msec);
   }
   thread Inertialinit(init);
+
+  if (tes){
+    test()
+  }
   
   Competition.autonomous(Left);
   Competition.drivercontrol(usercontrol);
