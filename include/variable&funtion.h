@@ -1,6 +1,6 @@
 #include "vector"
 
-
+extern void test();
 extern void usercontrol();
 extern void autonomous();
 extern vex::motor_group L;

@@ -21,6 +21,7 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
     double prevError = 0;       // 上一次误差（用于 D 项计算）
     double integral = 0;        // 积分项（用于 I 项）
     float firsttime;            // 用于记录误差进入容差范围的起始时间
+    float starttime = Brain.Timer.value();
 
     // 注：陀螺仪校准部分被注释掉了，实际使用时可能需要手动校准或确保启动前已校准
     // IMU.calibrate();
@@ -30,6 +31,11 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
 
     // 主控制循环
     while (true) {
+        if (Brain.Timer.value() - starttime >= 2){
+            L.stop();
+            R.stop();
+            break;
+        }
         // 获取当前朝向（IMU.heading() 返回 0~360 度）
         double currentAngle = IMU.heading();
         error = targetAngle - currentAngle;
@@ -478,8 +484,4 @@ double getSmoothTargetVelocity(
 
     // 确保速度非负
     return std::max(0.0, velocity);
-}
-
-void test(){
-
 }

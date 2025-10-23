@@ -129,7 +129,7 @@
 using namespace vex;
 competition Competition;
 
-int tes = 0
+int t = 0
 
 void pre_auton(void) {
   vexcodeInit();
@@ -150,7 +150,7 @@ int main() {
   }
   thread Inertialinit(init);
 
-  if (tes){
+  if (t){
     test()
   }
   
