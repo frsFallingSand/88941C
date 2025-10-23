@@ -22,6 +22,7 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
     double integral = 0;        // 积分项（用于 I 项）
     float firsttime;            // 用于记录误差进入容差范围的起始时间
     float starttime = Brain.Timer.value();
+    bool ck = 1;
 
     // 注：陀螺仪校准部分被注释掉了，实际使用时可能需要手动校准或确保启动前已校准
     // IMU.calibrate();
@@ -31,7 +32,7 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
 
     // 主控制循环
     while (true) {
-        if (Brain.Timer.value() - starttime >= 2){
+        if (Brain.Timer.value() - starttime >= 3){
             L.stop();
             R.stop();
             break;
@@ -43,6 +44,10 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
         // 将误差归一化到 [-180, 180] 范围内，避免跨 0°/360° 时的跳变
         if (error > 180) error -= 360;
         if (error < -180) error += 360;
+        if (fabs(error) < 15 && ck){
+            kp *= 0.7;
+            ck = 0;
+        }
 
         // ========== 前馈部分（当前被注释，可按需启用） ==========
         // 根据误差大小动态设定前馈值（大误差高速，小误差低速）

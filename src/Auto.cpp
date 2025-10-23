@@ -58,8 +58,8 @@ void Left(){
   // wait(100, msec); // 等待稳定
 
   // 转向至 180°（正对得分桶）
-  // smartTurn(180, 0.54, 0.09, 0.16);
+  smartTurn(180, 0.54, 0.09, 0.16);
 
   // 调用函数：将球从桶区域推入得分区（具体实现未在此文件）
-  // Bucket_to_Bridge();
+  Bucket_to_Bridge();
 }
