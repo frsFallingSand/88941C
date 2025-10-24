@@ -3,6 +3,11 @@
 /**
  * 左侧自动程序（从场地左侧出发）
  */
+void stoplr(){
+  L.stop(brake);
+  R.stop(brake);
+}
+
 void Left(){
   // 设置升降机构（Export）停止方式为 hold（保持当前位置）
   Export.setStopping(hold);
