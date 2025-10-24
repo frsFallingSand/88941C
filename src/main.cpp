@@ -130,6 +130,7 @@ using namespace vex;
 competition Competition;
 
 int t = 0;
+int mode = "";
 
 void pre_auton(void) {
   vexcodeInit();
@@ -153,9 +154,19 @@ int main() {
   if (t){
     test();
   }
-  
-  Competition.autonomous(Left);
-  Competition.drivercontrol(usercontrol);
+  mode = "left";
+  if (mode == "left"){
+    Competition.autonomous(Left);
+    Competition.drivercontrol(usercontrol);
+  }
+  if (mode == "right"){
+    Competition.autonomous(Right);
+    Competition.drivercontrol(usercontrol);
+  }
+  if (mode == "auto"){
+    Competition.autonomous(Auto);
+    Competition.drivercontrol(usercontrol);
+  }
 
   pre_auton();
   while (true) {

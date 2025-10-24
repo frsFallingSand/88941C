@@ -26,6 +26,7 @@ extern void init();
 //自动函数
 extern void Right();
 extern void Left();
+extern void Auto();
 
 
 //运动函数

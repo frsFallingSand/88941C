@@ -399,7 +399,7 @@ void pid(double t, double kp, double ki, double kd, double minVolt) {
 */
 float accelerationRate = 0.4;//加速度
 double lastYEncoder1;
-void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp,float Anglekp){
+void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp = 0.2,float Anglekp = 0.5){
   Controller1.Screen.clearScreen();
   float currentDist=0;
   lastYEncoder1=0;

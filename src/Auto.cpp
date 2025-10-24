@@ -9,6 +9,38 @@ void stoplr(){
 }
 
 void Left(){
+  Export.setStopping(hold);
+  L.setStopping(brake);
+  R.setStopping(brake);
+  Intake.spin(forward,100,vex::velocityUnits::pct);
+  Intake2.spin(forward,70,vex::velocityUnits::pct);
+  MoveDistancePID(fwd,23,50,20,0,0.2,0.5);
+  R.spinFor(forward,1.1,turns,20,vex::velocityUnits::pct);
+  L.stop(brake);
+  R.stop(brake);
+  wait(50,msec);
+  MoveDistancePID(fwd,16.5,15,10,336,0.2,0.5);
+  MoveDistancePID(reverse,2,15,10,336,0.2,-0.5);
+  smartTurn(225 , 0.47 , 0.05, 0.01);
+  MoveDistancePID(reverse,13,40,10,225,0.2,-0.5);
+
+  //退后顶中桥吐球
+  L.spin(reverse,7,vex::velocityUnits::pct);
+  R.spin(reverse,7,vex::velocityUnits::pct);
+  Intake2.stop();//关闭intake2，防止多余球入中桥
+  Export.spin(reverse,70,vex::velocityUnits::pct);
+  L.stop(brake);
+  R.stop(brake);
+  wait(400,msec);
+  Export.stop();
+  MoveDistancePID(fwd,48.5,50,15,225,0.2,0.5);
+  smartTurn(180 , 0.48 , 0.05 , 0.16);
+  Bucket_to_Bridge();
+  move(fwd,300,100);
+  moveTime(reverse,100,400);
+}
+
+void Auto(){
   // 设置升降机构（Export）停止方式为 hold（保持当前位置）
   Export.setStopping(hold);
   // 设置左右驱动轮停止方式为 brake（刹车）
