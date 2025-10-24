@@ -40,23 +40,29 @@ void usercontrol() {
     // 使用循环累加方式实现“加速转向”效果（越偏转，转向越灵敏）
     for (int i = 0; i <= abs(Controller1.Axis1.position(pct)); i++) {
       if (Controller1.Axis1.position(pct) >= 0)
-        r += i * 0.0016;        // 向右转
+        r += i * 0.0016; // 向右转
       else
-        r += i * (-0.0016);     // 向左转
+        r += i * (-0.0016); // 向左转
     }
 
     // 差速驱动模型：左轮 = 前进 + 转向，右轮 = 前进 - 转向
     POWER_Left = (go + r);
     POWER_Right = (go - r);
 
-    // 限制电压输出在 [-12.8V, +12.8V] 范围内（V5电机最大电压为12V，此处略超可能是容错）
-    if (POWER_Left > 12.8) POWER_Left = 12.8;
-    else if (POWER_Left < -12.8) POWER_Left = -12.8;
-    if (POWER_Right > 12.8) POWER_Right = 12.8;
-    else if (POWER_Right < -12.8) POWER_Right = -12.8;
+    // 限制电压输出在 [-12.8V, +12.8V]
+    // 范围内（V5电机最大电压为12V，此处略超可能是容错）
+    if (POWER_Left > 12.8)
+      POWER_Left = 12.8;
+    else if (POWER_Left < -12.8)
+      POWER_Left = -12.8;
+    if (POWER_Right > 12.8)
+      POWER_Right = 12.8;
+    else if (POWER_Right < -12.8)
+      POWER_Right = -12.8;
 
     // 死区处理：若左右轮输出都很小（±3V以内），则完全停止电机，避免微抖动
-    if (POWER_Left <= 3 && POWER_Left >= -3 && POWER_Right <= 3 && POWER_Right >= -3) {
+    if (POWER_Left <= 3 && POWER_Left >= -3 && POWER_Right <= 3 &&
+        POWER_Right >= -3) {
       L.stop();
       R.stop();
     } else {
@@ -70,18 +76,21 @@ void usercontrol() {
     // 【吸球机构 Intake 控制】
     // L1：正转（吸入）
     if (Controller1.ButtonL1.pressing() && !Controller1.ButtonL2.pressing() &&
-        (!Controller1.ButtonR1.pressing() || !Controller1.ButtonR2.pressing())) {
-      Export.stop(hold);  // 停止出球机构并保持位置
+        (!Controller1.ButtonR1.pressing() ||
+         !Controller1.ButtonR2.pressing())) {
+      Export.stop(hold); // 停止出球机构并保持位置
       Intake.spin(forward, 100, vex::velocityUnits::pct);
       Intake2.spin(forward, 100, vex::velocityUnits::pct);
     }
     // L2：反转（吐出）
-    else if (Controller1.ButtonL2.pressing() && !Controller1.ButtonL1.pressing()) {
+    else if (Controller1.ButtonL2.pressing() &&
+             !Controller1.ButtonL1.pressing()) {
       Intake.spin(reverse, 100, vex::velocityUnits::pct);
       Intake2.spin(reverse, 100, vex::velocityUnits::pct);
     }
     // L1 + L2 同时按：慢速反转（可能是微调或防卡）
-    else if (Controller1.ButtonL1.pressing() && Controller1.ButtonL2.pressing()) {
+    else if (Controller1.ButtonL1.pressing() &&
+             Controller1.ButtonL2.pressing()) {
       Intake.spin(reverse, 20, vex::velocityUnits::pct);
       Intake2.spin(reverse, 40, vex::velocityUnits::pct);
     }
@@ -93,7 +102,7 @@ void usercontrol() {
 
     // 【出球机构 Export 控制】
     if (Controller1.ButtonR1.pressing()) {
-      Export.spin(fwd, 100, vex::velocityUnits::pct);     // R1：正转（发射）
+      Export.spin(fwd, 100, vex::velocityUnits::pct); // R1：正转（发射）
     } else if (Controller1.ButtonR2.pressing()) {
       Export.spin(reverse, 60, vex::velocityUnits::pct); // R2：反转（回收）
     } else {
@@ -103,8 +112,8 @@ void usercontrol() {
     // 【前挡板控制】
     // front_panel_state 是一个全局布尔变量，表示挡板当前是否处于“可触发”状态
     if (Controller1.ButtonA.pressing() && front_panel_state) {
-      front_panel_state = 0;           // 防止重复触发
-      front_panel_control();           // 执行挡板动作（如伸出/收回）
+      front_panel_state = 0; // 防止重复触发
+      front_panel_control(); // 执行挡板动作（如伸出/收回）
     }
     // 注册 A 键释放回调，用于重置状态（允许下次触发）
     Controller1.ButtonA.released(front_panel_released);

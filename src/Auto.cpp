@@ -3,91 +3,101 @@
 /**
  * 左侧自动程序（从场地左侧出发）
  */
-void stoplr(){
+void stoplr() {
   L.stop(brake);
   R.stop(brake);
 }
 
-void initcar(){
+void initcar() {
   Export.setStopping(hold);
   L.setStopping(brake);
   R.setStopping(brake);
 }
 
-void start2picked(bool r = 0){
+void start2picked(bool r = 0) {
   // straight
-  Intake.spin(forward,100,vex::velocityUnits::pct);
-  Intake2.spin(forward,70,vex::velocityUnits::pct);
-  MoveDistancePID(fwd,23,50,20,0,0.2,0.5);
+  Intake.spin(forward, 100, vex::velocityUnits::pct);
+  Intake2.spin(forward, 70, vex::velocityUnits::pct);
+  MoveDistancePID(fwd, 23, 50, 20, 0, 0.2, 0.5);
 
   // turn
-  if (!r) R.spinFor(forward,1.1,turns,20,vex::velocityUnits::pct);
-  else L.spinFor(forward,1.25,turns,50,vex::velocityUnits::pct);
+  if (!r)
+    R.spinFor(forward, 1.1, turns, 20, vex::velocityUnits::pct);
+  else
+    L.spinFor(forward, 1.25, turns, 50, vex::velocityUnits::pct);
   stoplr();
-  wait(50,msec);
+  wait(50, msec);
 
   // pick
   if (!r) {
-    MoveDistancePID(fwd,16,15,10,336,0.2,0.5);
-    MoveDistancePID(reverse,2,15,10,336,0.2,-0.5);
+    MoveDistancePID(fwd, 16, 15, 10, 336, 0.2, 0.5);
+    MoveDistancePID(reverse, 2, 15, 10, 336, 0.2, -0.5);
   } else {
-    MoveDistancePID(fwd,16,15,10,24,0.2,0.5);
-    MoveDistancePID(reverse,2.7,15,10,24,0.2,-0.5);
+    MoveDistancePID(fwd, 16, 15, 10, 24, 0.2, 0.5);
+    MoveDistancePID(reverse, 2.7, 15, 10, 24, 0.2, -0.5);
   }
 }
 
-void picked2centered(bool r = 0){
+void picked2centered(bool r = 0) {
   // face at
-  if (!r) smartTurn(225 , 0.47 , 0.05, 0.01);
-  else smartTurn(315 , 0.47 , 0.05, 0.01);
-  if (!r) MoveDistancePID(reverse,14.2,40,10,225,0.2,-0.5);
-  else MoveDistancePID(fwd,14.3,40,10,315,0.4,0.7);
+  if (!r)
+    smartTurn(225, 0.47, 0.05, 0.01);
+  else
+    smartTurn(315, 0.47, 0.05, 0.01);
+  if (!r)
+    MoveDistancePID(reverse, 14.2, 40, 10, 225, 0.2, -0.5);
+  else
+    MoveDistancePID(fwd, 14.3, 40, 10, 315, 0.4, 0.7);
 
-  //退后顶中桥吐球
-  if (!r){
-    L.spin(reverse,8,vex::velocityUnits::pct);
-    R.spin(reverse,8,vex::velocityUnits::pct);
+  // 退后顶中桥吐球
+  if (!r) {
+    L.spin(reverse, 8, vex::velocityUnits::pct);
+    R.spin(reverse, 8, vex::velocityUnits::pct);
   } else {
     // L.spin(fwd,8,vex::velocityUnits::pct);
     // R.spin(fwd,8,vex::velocityUnits::pct);
   }
   if (!r) {
-    Intake2.stop();//关闭intake2，防止多余球入中桥
-    Export.spin(reverse,70,vex::velocityUnits::pct);
+    Intake2.stop(); // 关闭intake2，防止多余球入中桥
+    Export.spin(reverse, 70, vex::velocityUnits::pct);
   } else {
-    Intake2.spin(reverse,100,vex::velocityUnits::pct);
-    wait(500,msec);
-    Intake.spin(reverse,30,vex::velocityUnits::pct);
-    wait(200,msec);
-    Intake.spin(reverse,10,vex::velocityUnits::pct);
+    Intake2.spin(reverse, 100, vex::velocityUnits::pct);
+    wait(500, msec);
+    Intake.spin(reverse, 30, vex::velocityUnits::pct);
+    wait(200, msec);
+    Intake.spin(reverse, 10, vex::velocityUnits::pct);
   }
   stoplr();
-  wait(500,msec);
+  wait(500, msec);
   Export.stop();
   Intake.stop();
   Intake2.stop();
-  if (r) wait(500,msec);
+  if (r)
+    wait(500, msec);
 }
 
-void centered2sided(bool r = 0){
-  if (!r) MoveDistancePID(fwd,49.5,50,15,225,0.2,0.5);
+void centered2sided(bool r = 0) {
+  if (!r)
+    MoveDistancePID(fwd, 49.5, 50, 15, 225, 0.2, 0.5);
   else {
-    MoveDistancePID(reverse,2,50,50,315,0.2,0.4);
-    Intake.spin(forward,100,vex::velocityUnits::pct);
-    Intake2.spin(forward,70,vex::velocityUnits::pct);
-    MoveDistancePID(reverse,42,50,15,315,0.2,0.4);
+    MoveDistancePID(reverse, 2, 50, 50, 315, 0.2, 0.4);
+    Intake.spin(forward, 100, vex::velocityUnits::pct);
+    Intake2.spin(forward, 70, vex::velocityUnits::pct);
+    MoveDistancePID(reverse, 42, 50, 15, 315, 0.2, 0.4);
   }
-  smartTurn(180, 0.48 , 0.05 , 0.16);
-  if (!r) Bucket_to_Bridge();
-  else Bucket_to_Bridge_rdiff();
+  smartTurn(180, 0.48, 0.05, 0.16);
+  if (!r)
+    Bucket_to_Bridge();
+  else
+    Bucket_to_Bridge_rdiff();
 }
 
-void knock_bucket(){
-  move(fwd,300,100);
-  moveTime(reverse,100,400);
+void knock_bucket() {
+  move(fwd, 300, 100);
+  moveTime(reverse, 100, 400);
 }
 
-void Left(){
+void Left() {
   initcar();
   start2picked();
   picked2centered();
@@ -95,7 +105,7 @@ void Left(){
   knock_bucket();
 }
 
-void Right(){
+void Right() {
   initcar();
   start2picked(1);
   picked2centered(1);
@@ -103,7 +113,7 @@ void Right(){
   knock_bucket();
 }
 
-void Auto(){
+void Auto() {
   // 设置升降机构（Export）停止方式为 hold（保持当前位置）
   Export.setStopping(hold);
   // 设置左右驱动轮停止方式为 brake（刹车）
@@ -132,8 +142,8 @@ void Auto(){
 
   // —————— 到达中桥区域 ——————
 
-  // 智能转向：向左转到 -130 度（等效 230 度），参数为角度、KP、KI、KD（PID 参数）
-  // smartTurn(-130, 0.48, 0.07, 0.01);
+  // 智能转向：向左转到 -130 度（等效 230 度），参数为角度、KP、KI、KD（PID
+  // 参数） smartTurn(-130, 0.48, 0.07, 0.01);
 
   // 后退 700mm，速度 30%，准备对准中桥入口
   // move(fwd, 700, 30);
@@ -168,5 +178,3 @@ void Auto(){
   // 调用函数：将球从桶区域推入得分区（具体实现未在此文件）
   // Bucket_to_Bridge();
 }
-
-
