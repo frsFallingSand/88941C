@@ -105,3 +105,8 @@ void Auto(){
   // 调用函数：将球从桶区域推入得分区（具体实现未在此文件）
   // Bucket_to_Bridge();
 }
+
+
+void Right(){
+  return;
+}

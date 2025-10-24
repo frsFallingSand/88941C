@@ -125,12 +125,13 @@
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
+#include <string>
 
 using namespace vex;
 competition Competition;
 
 int t = 0;
-int mode = "";
+std::string mode = "";
 
 void pre_auton(void) {
   vexcodeInit();
