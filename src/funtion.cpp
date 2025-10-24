@@ -45,7 +45,7 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
         if (error > 180) error -= 360;
         if (error < -180) error += 360;
         if (fabs(error) < 15 && ck){
-            kp *= 0.7;
+            kP *= 0.7;
             ck = 0;
         }
 
@@ -396,11 +396,11 @@ void pid(double t, double kp, double ki, double kd, double minVolt) {
 
 */
 float accelerationRate = 0.4;//加速度
-double lastYEncoder;
+double lastYEncoder1;
 void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp,float Anglekp){
   Controller1.Screen.clearScreen();
   float currentDist=0;
-  lastYEncoder=0;
+  lastYEncoder1=0;
   y.resetPosition();
   wait(100,msec);
   float remainingDist = targetDist - currentDist; //总剩余距离
@@ -413,7 +413,7 @@ void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,flo
     if(deg_error > 180) deg_error -= 360;
     if(deg_error < -180) deg_error += 360;
     double currentYEncoder = y.position(degrees);
-    double deltaY = ((currentYEncoder - lastYEncoder) / 360) * (2 * M_PI * 1);
+    double deltaY = ((currentYEncoder - lastYEncoder1) / 360) * (2 * M_PI * 1);
     currentDist+=deltaY;
     if(targetDist<=fabs(currentDist)){
       break;
@@ -430,7 +430,7 @@ void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,flo
     L.spin(dir,currentSpeed+k,pct);
     R.spin(dir,currentSpeed-k,pct);
     //wait(5,msec);
-    lastYEncoder = currentYEncoder;
+    lastYEncoder1 = currentYEncoder;
     Brain.Screen.setCursor(5,22);
     Brain.Screen.print(currentDist);
   }
@@ -481,7 +481,7 @@ double getSmoothTargetVelocity(
 
     // 进入平滑减速段：使用余弦函数平滑减速到 0
     double progress = (current_distance - decel_start) / (total_distance - decel_start);
-    progress = std::clamp(progress, 0.0, 1.0); // 确保在 [0, 1] 范围内
+    progress = clamp(progress, 0.0, 1.0); // 确保在 [0, 1] 范围内
 
     // 余弦平滑：v = v_cruise * (1 + cos(π * t)) / 2
     // t=0 → v = v_cruise, t=1 → v = 0，且加速度在两端为0

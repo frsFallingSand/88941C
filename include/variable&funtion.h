@@ -1,5 +1,6 @@
 #include "vector"
 
+extern double clamp(double temp, double min, double max);
 extern void test();
 extern void usercontrol();
 extern void autonomous();
