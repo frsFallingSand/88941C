@@ -22,8 +22,8 @@ motor Intake2 = motor(PORT1, ratio18_1, true);
 digital_out front_panel = digital_out(Brain.ThreeWirePort.A);
 digital_out Double_hook = digital_out(Brain.ThreeWirePort.B);
 digital_out Lift_it_up = digital_out(Brain.ThreeWirePort.H);
-rotation x = rotation(PORT8, true);
-rotation y = rotation(PORT15, true);
+rotation x = rotation(PORT15, true);
+rotation y = rotation(PORT5, true);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

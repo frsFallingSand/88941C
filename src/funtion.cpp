@@ -209,7 +209,7 @@ bool front_panel_state = 1;   // 1=可触发，0=已触发（防抖）
 int front_panel_cnt = 0;      // 切换计数器（偶数开，奇数关）
 
 void front_panel_control() {
-    if (front_panel_state == 1) {  // 仅在松开后首次按下时执行
+    // if (front_panel_state == 1) {  // 仅在松开后首次按下时执行
         front_panel_state = 0;     // 锁定状态
         if (front_panel_cnt % 2 == 0) {
             front_panel.set(true);   // 打开挡板
@@ -217,7 +217,7 @@ void front_panel_control() {
             front_panel.set(false);  // 关闭挡板
         }
         front_panel_cnt++;
-    }
+    // }
 }
 
 // 按键松开时重置状态，允许下次触发
@@ -232,7 +232,7 @@ bool Double_hook_state = 1;
 int Double_hook_cnt = 0;
 
 void Double_hook_control() {
-    if (Double_hook_state == 1) {
+    // if (Double_hook_state == 1) {
         Double_hook_state = 0;
         if (Double_hook_cnt % 2 == 0) {
             Double_hook.set(true);
@@ -240,7 +240,7 @@ void Double_hook_control() {
             Double_hook.set(false);
         }
         Double_hook_cnt++;
-    }
+    // }
 }
 
 void Double_hook_released() {
@@ -264,13 +264,13 @@ void Bucket_to_Bridge(){
   Intake.spin(forward,100,vex::velocityUnits::pct);
   Intake2.spin(forward,100,vex::velocityUnits::pct);
   moveTime(fwd,40,700);
-  move(reverse,5,25);
+  move(reverse,5,20);
   wait(1.2,sec);
   moveTime(reverse,50,1200);
   Export.spin(fwd,100,vex::velocityUnits::pct);
   Intake.spin(reverse,100,vex::velocityUnits::pct);
   Intake2.spin(reverse,100,vex::velocityUnits::pct);
-  wait(400,msec);
+  wait(500,msec);
   Intake.stop();
   Intake2.stop();
   Intake.spin(forward,100,vex::velocityUnits::pct);

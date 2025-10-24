@@ -151,23 +151,24 @@ int main() {
     wait(50, msec);
   }
   thread Inertialinit(init);
-
-  if (t){
-    test();
-  }
-  mode = "left";
-  if (mode == "left"){
-    Competition.autonomous(Left);
-    Competition.drivercontrol(usercontrol);
-  }
-  if (mode == "right"){
-    Competition.autonomous(Right);
-    Competition.drivercontrol(usercontrol);
-  }
-  if (mode == "auto"){
-    Competition.autonomous(Auto);
-    Competition.drivercontrol(usercontrol);
-  }
+  Competition.autonomous(Left);
+  Competition.drivercontrol(usercontrol);
+  // if (t){
+  //   test();
+  // }
+  // mode = "left";
+  // if (mode == "left"){
+  //   Competition.autonomous(Left);
+  //   Competition.drivercontrol(usercontrol);
+  // }
+  // if (mode == "right"){
+  //   Competition.autonomous(Right);
+  //   Competition.drivercontrol(usercontrol);
+  // }
+  // if (mode == "auto"){
+  //   Competition.autonomous(Auto);
+  //   Competition.drivercontrol(usercontrol);
+  // }
 
   pre_auton();
   while (true) {

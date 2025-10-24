@@ -95,7 +95,7 @@ void usercontrol() {
     if (Controller1.ButtonR1.pressing()) {
       Export.spin(fwd, 100, vex::velocityUnits::pct);     // R1：正转（发射）
     } else if (Controller1.ButtonR2.pressing()) {
-      Export.spin(reverse, 100, vex::velocityUnits::pct); // R2：反转（回收）
+      Export.spin(reverse, 60, vex::velocityUnits::pct); // R2：反转（回收）
     } else {
       Export.stop(); // 松开则停止
     }
