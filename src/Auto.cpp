@@ -20,7 +20,8 @@ void Left(){
   // linearSmoothStop(fwd, 1300, 30, 150, 20, 338, 0.5);
 
   // 继续前进 400mm，速度 40%
-  move(fwd, 1300, 80);
+  // move(fwd, 1300, 80);
+  linearSmoothStop(fwd, 1900, 80, 800, 80, 340, 0.5);
   linearSmoothStop(fwd, 1900, 80, 800, 50, 0, 0.5);
   Intake.stop();
   Intake2.stop();
