@@ -72,14 +72,14 @@ void picked2centered(bool r = 0){
 void centered2sided(bool r = 0){
   if (!r) MoveDistancePID(fwd,49.5,50,15,225,0.2,0.5);
   else {
-    MoveDistancePID(reverse,48,50,15,315,0.2,0.5);
-    wait(100,msec);
+    MoveDistancePID(reverse,2,50,50,315,0.2,0.4);
     Intake.spin(forward,100,vex::velocityUnits::pct);
     Intake2.spin(forward,70,vex::velocityUnits::pct);
-    wait(200,msec);
+    MoveDistancePID(reverse,42,50,15,315,0.2,0.4);
   }
   smartTurn(180, 0.48 , 0.05 , 0.16);
-  Bucket_to_Bridge();
+  if (!r) Bucket_to_Bridge();
+  else Bucket_to_Bridge_rdiff();
 }
 
 void knock_bucket(){

@@ -290,6 +290,37 @@ void Bucket_to_Bridge(){
   
   }
 
+void Bucket_to_Bridge_rdiff(){
+  front_panel.set(true);
+  wait(50,msec);
+  Intake.spin(forward,100,vex::velocityUnits::pct);
+  Intake2.spin(forward,100,vex::velocityUnits::pct);
+  moveTime(fwd,40,700);
+  move(reverse,5,20);
+  wait(1.2,sec);
+  moveTime(reverse,50,1200);
+  Export.spin(fwd,100,vex::velocityUnits::pct);
+  Intake.spin(reverse,100,vex::velocityUnits::pct);
+  Intake2.spin(reverse,100,vex::velocityUnits::pct);
+  wait(700,msec);
+  Intake.stop();
+  Intake2.stop();
+  Intake.spin(forward,100,vex::velocityUnits::pct);
+  Intake2.spin(forward,100,vex::velocityUnits::pct);
+  front_panel.set(false);
+  for(int i=0;i<4;i++){
+    L.spinFor(fwd,50,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(reverse,90,deg,100,vex::velocityUnits::pct);
+    L.spinFor(reverse,90,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(fwd,50,deg,100,vex::velocityUnits::pct);
+  }
+  moveTime(reverse,100,400);
+  wait(0.6,sec);
+  Intake.stop();
+  Intake2.stop();
+  Export.stop();
+}
+
 // ==============================================================================
 // 简化版 PID 转向函数（使用电压控制而非百分比）
 // 参数：
@@ -357,7 +388,8 @@ void pid(double t, double kp, double ki, double kd, double minVolt) {
 */
 float accelerationRate = 0.4;//加速度
 double lastYEncoder;
-void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp,float Anglekp){
+void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp,float Anglekp,float timeout){
+  float starttime=Brain.Timer.value();
   Controller1.Screen.clearScreen();
   float currentDist=0;
   lastYEncoder=0;
@@ -368,6 +400,11 @@ void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,flo
   if(remainingDist>=10&&Maxspeed>=20) currentSpeed = 20; //确定启动速度
   else currentSpeed = Maxspeed;  //最大速度小于启动速度的时候，按Maxspeed
   while(1){
+    if(Brain.Timer.value()-starttime>=timeout){
+          L.stop();
+          R.stop();
+          break;
+    }
     int deg_error = targetAngle - IMU.heading();
     // 确保误差在-180到180范围内
     if(deg_error > 180) deg_error -= 360;
