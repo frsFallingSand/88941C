@@ -390,6 +390,9 @@ float accelerationRate = 0.4;//加速度
 double lastYEncoder;
 void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp,float Anglekp,float timeout){
   float starttime=Brain.Timer.value();
+  if (timeout == 0){
+    timeout = (targetDist / Maxspeed) + 2;
+  }
   Controller1.Screen.clearScreen();
   float currentDist=0;
   lastYEncoder=0;
@@ -400,7 +403,7 @@ void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,flo
   if(remainingDist>=10&&Maxspeed>=20) currentSpeed = 20; //确定启动速度
   else currentSpeed = Maxspeed;  //最大速度小于启动速度的时候，按Maxspeed
   while(1){
-    if(Brain.Timer.value()-starttime>=timeout){
+    if(Brain.Timer.value()-starttime>=timeout && timeout >= 0){
           L.stop();
           R.stop();
           break;
