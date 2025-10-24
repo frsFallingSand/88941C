@@ -22,7 +22,7 @@ void start2picked(bool r = 0){
 
   // turn
   if (!r) R.spinFor(forward,1.1,turns,20,vex::velocityUnits::pct);
-  else L.spinFor(forward,1.1,turns,20,vex::velocityUnits::pct);
+  else L.spinFor(forward,1.2,turns,40,vex::velocityUnits::pct);
   stoplr();
   wait(50,msec);
 
@@ -32,7 +32,7 @@ void start2picked(bool r = 0){
     MoveDistancePID(reverse,2,15,10,336,0.2,-0.5);
   } else {
     MoveDistancePID(fwd,16,15,10,24,0.2,0.5);
-    MoveDistancePID(reverse,2,15,10,24,0.2,-0.5);
+    MoveDistancePID(reverse,2.6,15,10,24,0.2,-0.5);
   }
 }
 
@@ -41,18 +41,23 @@ void picked2centered(bool r = 0){
   if (!r) smartTurn(225 , 0.47 , 0.05, 0.01);
   else smartTurn(315 , 0.47 , 0.05, 0.01);
   if (!r) MoveDistancePID(reverse,14.2,40,10,225,0.2,-0.5);
-  else MoveDistancePID(fwd,14.2,40,10,315,0.2,-0.5);
+  else MoveDistancePID(fwd,14.6,40,10,315,0.2,-0.5);
 
   //退后顶中桥吐球
-  L.spin(reverse,8,vex::velocityUnits::pct);
-  R.spin(reverse,8,vex::velocityUnits::pct);
+  if (!r){
+    L.spin(reverse,8,vex::velocityUnits::pct);
+    R.spin(reverse,8,vex::velocityUnits::pct);
+  } else {
+    // L.spin(fwd,8,vex::velocityUnits::pct);
+    // R.spin(fwd,8,vex::velocityUnits::pct);
+  }
   if (!r) {
     Intake2.stop();//关闭intake2，防止多余球入中桥
     Export.spin(reverse,70,vex::velocityUnits::pct);
   } else {
     Intake2.spin(reverse,70,vex::velocityUnits::pct);
     wait(500,msec);
-    Intake.spin(reverse,30,vex::velocityUnits::pct);
+    Intake.spin(reverse,50,vex::velocityUnits::pct);
   }
   stoplr();
   wait(500,msec);
