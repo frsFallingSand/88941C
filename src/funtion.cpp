@@ -140,6 +140,8 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
 void linearSmoothStop(vex::directionType dir, float dis, float Maxspeed,
                       float DecelerationDis, float Minspeed,
                       int targetdeg, double kp) {
+    MoveDistancePID(dir, dis, Maxspeed, Minspeed, targetdeg, kp, kp);
+    return;
     // 重置左右电机编码器
     L.setPosition(0, degrees);
     R.setPosition(0, degrees);
