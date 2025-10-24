@@ -16,112 +16,78 @@ double feedforward = 0;     // 前馈输出值
 //   targetAngle：目标角度（单位：度）
 //   kP, kI, kD：PID 控制参数
 // ==============================================================================
-void smartTurn(double targetAngle, double kP, double kI, double kD) {
-    double error = 0;           // 当前角度误差
-    double prevError = 0;       // 上一次误差（用于 D 项计算）
-    double integral = 0;        // 积分项（用于 I 项）
-    float firsttime;            // 用于记录误差进入容差范围的起始时间
-    float starttime = Brain.Timer.value();
-    bool ck = 1;
-
-    // 注：陀螺仪校准部分被注释掉了，实际使用时可能需要手动校准或确保启动前已校准
-    // IMU.calibrate();
-    // while(IMU.isCalibrating()) wait(10, msec);
-    // IMU.resetHeading();
-    // wait(300, msec);
-
+double P=0;
+double I=0;
+double D=0;
+// 3. 核心转向函数   // KP-基本转向力度 (0.1-0.6)  KI-消除残留误差 (保持很小)   KD-防止抖动 (0.1-0.4)
+void smartTurn(double targetAngle,double kP,double kI,double kD) {
+    // 重置变量
+    double error = 0;
+    double prevError = 0;
+    double integral = 0;
+    float firsttime;
+    float starttime=Brain.Timer.value();
+    bool ck=1;
     // 主控制循环
-    while (true) {
-        if (Brain.Timer.value() - starttime >= 3){
+    while(true) {
+        if(Brain.Timer.value()-starttime>=3){
+          L.stop();
+          R.stop();
+          break;
+        }
+        
+        // 计算当前误差
+        double currentAngle = IMU.heading();
+        error = targetAngle - currentAngle;
+        
+        // 确保误差在-180到180范围内
+        if(error > 180) error -= 360;
+        if(error < -180) error += 360;
+        if(fabs(error) < 15 &&ck) {
+          kP*=0.7;
+          ck=0;
+        }
+        // ====== PID部分 ======
+        // P项
+        P = kP * error;
+        
+        // I项（抗饱和处理）
+
+        // 积分项(带限幅和条件积分)
+        if(fabs(error) < 15 ) {
+            integral += error ;
+        } else {
+            integral = 0;
+        }
+        if(fabs(integral) > 3000) integral = 3000 * (integral > 0 ? 1 : -1);
+        I = kI * integral;
+        // D项
+        D = kD * (error - prevError);
+        // ====== 组合输出 ======
+        double output = P + I + D; 
+        // 限制输出范围
+        if(output > 100) output = 100;
+        if(output < -100) output = -100;
+        // 驱动电机
+        L.spin(fwd, output, pct);
+        R.spin(fwd, -output, pct); // 注意右电机反向
+        // 检查是否到达目标（±1度内）
+        if(fabs(error) < 1.0 ) {
+          if(Brain.Timer.value() - firsttime >= 0.05){
             L.stop();
             R.stop();
             break;
+          }
+        }else{
+          firsttime = Brain.Timer.value();
         }
-        // 获取当前朝向（IMU.heading() 返回 0~360 度）
-        double currentAngle = IMU.heading();
-        error = targetAngle - currentAngle;
-
-        // 将误差归一化到 [-180, 180] 范围内，避免跨 0°/360° 时的跳变
-        if (error > 180) error -= 360;
-        if (error < -180) error += 360;
-        if (fabs(error) < 15 && ck){
-            kP *= 0.7;
-            ck = 0;
-        }
-
-        // ========== 前馈部分（当前被注释，可按需启用） ==========
-        // 根据误差大小动态设定前馈值（大误差高速，小误差低速）
-        /*
-        feedforward = 0;
-        if (fabs(error) > 50) {
-            feedforward = kV * 100;  // 大角度全速转
-        } else if (fabs(error) > 30) {
-            feedforward = kV * 60;   // 中等角度中速
-        } else {
-            feedforward = kV * 10;   // 小角度慢速
-        }
-        */
-
-        // ========== PID 控制部分 ==========
-        // P 项：比例控制
-        P = kP * error;
-
-        // I 项：积分控制（带抗饱和和条件积分）
-        if (fabs(error) < 15) {
-            integral += error;  // 仅在误差较小时累积积分
-        } else {
-            integral = 0;       // 误差大时清零积分，防止超调
-        }
-        // 积分限幅（防止积分饱和）
-        if (fabs(integral) > 3000)
-            integral = 3000 * (integral > 0 ? 1 : -1);
-        I = kI * integral;
-
-        // D 项：微分控制（抑制振荡）
-        D = kD * (error - prevError);
-
-        // 总输出 = PID + 前馈
-        double output = P + I + D;
-
-        // 添加前馈（根据转向方向调整符号）
-        if (error > 0) {
-            output += feedforward;  // 需要右转（顺时针）
-        } else {
-            output -= feedforward;  // 需要左转（逆时针）
-        }
-
-        // 刹车逻辑：当接近目标（误差 < 20°）时降低输出功率
-        if (fabs(error) < 20) {
-            output *= brakePower;
-        }
-
-        // 输出限幅（电机功率范围：-100% ~ +100%）
-        if (output > 100) output = 100;
-        if (output < -100) output = -100;
-
-        // 驱动电机：差速转向（左轮正转，右轮反转实现原地转向）
-        L.spin(fwd, output, pct);
-        R.spin(fwd, -output, pct);  // 注意右轮方向相反
-
-        // 判断是否稳定到达目标（误差 < 1° 且持续 50ms）
-        if (fabs(error) < 1.0) {
-            if (Brain.Timer.value() - firsttime >= 0.05) {  // 0.05秒 = 50ms
-                L.stop();
-                R.stop();
-                break;  // 退出循环
-            }
-        } else {
-            firsttime = Brain.Timer.value();  // 重置计时起点
-        }
-
         // 更新前次误差
         prevError = error;
-
-        // 控制循环周期：20ms
+        // 短暂等待
         wait(20, msec);
     }
-
-    // 最终停止电机（保险）
+    
+    // 停止电机
     L.stop();
     R.stop();
 }
@@ -292,45 +258,37 @@ void Double_hook_released() {
 //   6. 抬升机构 + 反向吐球
 //   7. 复位
 // ==============================================================================
-void Bucket_to_Bridge() {
-    front_panel.set(true);                     // 打开前挡板
-    wait(100, msec);
-    
-    Intake.spin(forward, 100, vex::velocityUnits::pct);   // 启动左右滚筒
-    Intake2.spin(forward, 100, vex::velocityUnits::pct);
-    
-    moveTime(fwd, 30, 900);                    // 向前冲 900ms
-    move(reverse, 5, 25);                      // 微退 5 度
-    wait(1, sec);                              // 等待稳定
-
-    // 后退至桥区（约 1200 度，保持朝向 180°）
-    linearSmoothStop(reverse, 1200, 50, 800, 50, 180, -0.5);
-    
-    moveTime(reverse, 80, 400);                // 快速后退冲上桥
-    wait(100, msec);
-
-    // 启动抬升机构并反向吐球
-    Export.spin(fwd, 100, vex::velocityUnits::pct);
-    Intake.spin(reverse, 100, vex::velocityUnits::pct);
-    Intake2.spin(reverse, 100, vex::velocityUnits::pct);
-    wait(500, msec);
-
-    // 停止吐球，再正转吸住残余球（防掉落）
-    Intake.stop();
-    Intake2.stop();
-    Intake.spin(forward, 100, vex::velocityUnits::pct);
-    Intake2.spin(forward, 100, vex::velocityUnits::pct);
-    wait(2, sec);
-
-    // 停止所有机构
-    Intake.stop();
-    Intake2.stop();
-    Export.stop();
-    front_panel.set(false);                    // 关闭前挡板
-
-    move(fwd, 300, 20);                        // 前进脱离桥区
-    moveTime(reverse, 100, 300);               // 快速后退复位
-}
+void Bucket_to_Bridge(){
+  front_panel.set(true);
+  wait(50,msec);
+  Intake.spin(forward,100,vex::velocityUnits::pct);
+  Intake2.spin(forward,100,vex::velocityUnits::pct);
+  moveTime(fwd,40,700);
+  move(reverse,5,25);
+  wait(1.2,sec);
+  moveTime(reverse,50,1200);
+  Export.spin(fwd,100,vex::velocityUnits::pct);
+  Intake.spin(reverse,100,vex::velocityUnits::pct);
+  Intake2.spin(reverse,100,vex::velocityUnits::pct);
+  wait(400,msec);
+  Intake.stop();
+  Intake2.stop();
+  Intake.spin(forward,100,vex::velocityUnits::pct);
+  Intake2.spin(forward,100,vex::velocityUnits::pct);
+  front_panel.set(false);
+  for(int i=0;i<4;i++){
+    L.spinFor(fwd,50,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(reverse,90,deg,100,vex::velocityUnits::pct);
+    L.spinFor(reverse,90,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(fwd,50,deg,100,vex::velocityUnits::pct);
+  }
+  moveTime(reverse,100,400);
+  wait(0.6,sec);
+  Intake.stop();
+  Intake2.stop();
+  Export.stop();
+  
+  }
 
 // ==============================================================================
 // 简化版 PID 转向函数（使用电压控制而非百分比）
@@ -398,11 +356,11 @@ void pid(double t, double kp, double ki, double kd, double minVolt) {
 
 */
 float accelerationRate = 0.4;//加速度
-double lastYEncoder1;
-void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp = 0.2,float Anglekp = 0.5){
+double lastYEncoder;
+void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,float minSpeed,float targetAngle,float DISkp,float Anglekp){
   Controller1.Screen.clearScreen();
   float currentDist=0;
-  lastYEncoder1=0;
+  lastYEncoder=0;
   y.resetPosition();
   wait(100,msec);
   float remainingDist = targetDist - currentDist; //总剩余距离
@@ -415,9 +373,11 @@ void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,flo
     if(deg_error > 180) deg_error -= 360;
     if(deg_error < -180) deg_error += 360;
     double currentYEncoder = y.position(degrees);
-    double deltaY = ((currentYEncoder - lastYEncoder1) / 360) * (2 * M_PI * 1);
+    double deltaY = ((currentYEncoder - lastYEncoder) / 360) * (2 * M_PI * 1);
     currentDist+=deltaY;
     if(targetDist<=fabs(currentDist)){
+      L.stop(brake);
+      R.stop(brake);
       break;
     }
     //加速阶段
@@ -432,9 +392,7 @@ void MoveDistancePID(vex:: directionType dir,float targetDist,float Maxspeed,flo
     L.spin(dir,currentSpeed+k,pct);
     R.spin(dir,currentSpeed-k,pct);
     //wait(5,msec);
-    lastYEncoder1 = currentYEncoder;
-    Brain.Screen.setCursor(5,22);
-    Brain.Screen.print(currentDist);
+    lastYEncoder = currentYEncoder;
   }
   
 }
