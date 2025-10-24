@@ -83,7 +83,7 @@ void centered2sided(bool r = 0) {
     MoveDistancePID(reverse, 2, 50, 50, 315, 0.2, 0.4);
     Intake.spin(forward, 100, vex::velocityUnits::pct);
     Intake2.spin(forward, 70, vex::velocityUnits::pct);
-    MoveDistancePID(reverse, 42, 50, 15, 315, 0.2, 0.4);
+    MoveDistancePID(reverse, 44, 50, 15, 315, 0.2, 0.4);
   }
   smartTurn(180, 0.48, 0.05, 0.16);
   if (!r)
