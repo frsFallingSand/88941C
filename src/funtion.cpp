@@ -305,7 +305,7 @@ void Bucket_to_Bridge_rdiff() {
   Export.spin(fwd, 100, vex::velocityUnits::pct);
   Intake.spin(reverse, 100, vex::velocityUnits::pct);
   Intake2.spin(reverse, 100, vex::velocityUnits::pct);
-  wait(700, msec);
+  wait(600, msec);
   Intake.stop();
   Intake2.stop();
   Intake.spin(forward, 100, vex::velocityUnits::pct);
