@@ -151,7 +151,7 @@ int main() {
     wait(50, msec);
   }
   thread Inertialinit(init);
-  Competition.autonomous(Right);
+  Competition.autonomous(Auto);
   Competition.drivercontrol(usercontrol);
   // if (t){
   //   test();
