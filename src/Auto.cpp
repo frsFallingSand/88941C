@@ -122,22 +122,32 @@ void go_straight() {
   Intake2.spin(forward, 60, vex::velocityUnits::pct);
   // MoveDistancePID(fwd, 23, 50, 20, 0, 0.2, 0.5);
   // R.spinFor(forward, 1.1, turns, 20, vex::velocityUnits::pct);
-  MoveDistancePID(fwd, 39, 50, 30, 345, 0.2, 0.5);
+  MoveDistancePID(fwd, 39, 70, 50, 345, 0.2, 0.5);
   MoveDistancePID(fwd, 60, 80, 50, 15, 0.2, 0.5);
   Intake.stop();
   Intake2.stop();
 }
 
+void rotation_to_correct(vex::directionType dir, float Speed, float targetAngle, float deltaDeg) {
+  int deg_error = targetAngle - IMU.heading();
+  while(deg_error >= deltaDeg) {
+    deg_error = targetAngle - IMU.heading();
+    L.spin(dir, Speed, pct);
+    R.spin(dir, Speed, pct);
+  }
+  stoplr();
+}
+
 void go_side() {
-  smartTurn(45, 0.47, 0.05, 0.01);
-  MoveDistancePID(reverse, 33, 15, 10, 336, 0.2, 0.5);
+  smartTurn(55, 0.47, 0.05, 0.01);
+  // MoveDistancePID(reverse, 33, 30, 10, 55, 0.2, 0.4);
+  rotation_to_correct(reverse, 30, 0, 2);
+  return;
   Bucket_to_Bridge();
-  knock_bucket();
 }
 
 void Auto() {
   initcar();
   go_straight();
-  return;
   go_side();
 }
