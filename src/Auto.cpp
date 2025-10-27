@@ -24,7 +24,7 @@ void start2picked(bool r = 0) {
   if (!r)
     R.spinFor(forward, 1.1, turns, 20, vex::velocityUnits::pct);
   else
-    L.spinFor(forward, 1.25, turns, 50, vex::velocityUnits::pct);
+    L.spinFor(forward, 1.3, turns, 80, vex::velocityUnits::pct);
   stoplr();
   wait(50, msec);
 
@@ -47,7 +47,7 @@ void picked2centered(bool r = 0) {
   if (!r)
     MoveDistancePID(reverse, 14.2, 40, 10, 225, 0.2, -0.5);
   else
-    MoveDistancePID(fwd, 14.3, 40, 10, 315, 0.4, 0.7);
+    MoveDistancePID(fwd, 14.2, 40, 10, 315, 0.4, 0.7);
 
   // 退后顶中桥吐球
   if (!r) {
@@ -64,7 +64,7 @@ void picked2centered(bool r = 0) {
     Intake2.spin(reverse, 100, vex::velocityUnits::pct);
     wait(500, msec);
     Intake.spin(reverse, 30, vex::velocityUnits::pct);
-    wait(200, msec);
+    wait(300, msec);
     Intake.spin(reverse, 10, vex::velocityUnits::pct);
   }
   stoplr();
@@ -80,10 +80,13 @@ void centered2sided(bool r = 0) {
   if (!r)
     MoveDistancePID(fwd, 49.5, 50, 15, 225, 0.2, 0.5);
   else {
-    MoveDistancePID(reverse, 2, 50, 50, 315, 0.2, 0.7);
+    L.spinFor(reverse, 0.3183098862, turns, 50, vex::velocityUnits::pct);
+    R.spinFor(reverse, 0.3183098862, turns, 50, vex::velocityUnits::pct);
+    // MoveDistancePID(reverse, 2, 50, 50, 315, 0.2, 0.7);
     Intake.spin(forward, 100, vex::velocityUnits::pct);
     Intake2.spin(forward, 70, vex::velocityUnits::pct);
-    MoveDistancePID(reverse, 45, 50, 15, 315, 0.2, 0.7);
+    wait(200, msec);
+    MoveDistancePID(reverse, 43, 50, 15, 315, 0.2, 0.3);
     // wait(500, msec);
   }
   smartTurn(180, 0.48, 0.05, 0.16);
