@@ -295,12 +295,12 @@ void Bucket_to_Bridge() {
 
 void Bucket_to_Bridge_rdiff() {
   front_panel.set(true);
-  wait(50, msec);
+  // wait(50, msec);
   Intake.spin(forward, 100, vex::velocityUnits::pct);
   Intake2.spin(forward, 100, vex::velocityUnits::pct);
-  moveTime(fwd, 40, 700);
-  move(reverse, 5, 20);
-  wait(1.2, sec);
+  moveTime(fwd, 40, 800); // v%, t(ms)
+  move(reverse, 5, 20); // s, v%
+  wait(1.3, sec);
   moveTime(reverse, 50, 1200);
   Export.spin(fwd, 100, vex::velocityUnits::pct);
   Intake.spin(reverse, 100, vex::velocityUnits::pct);
