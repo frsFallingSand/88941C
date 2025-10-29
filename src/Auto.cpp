@@ -18,7 +18,7 @@ void start2picked(bool r = 0) {
   // straight
   Intake.spin(forward, 100, vex::velocityUnits::pct);
   Intake2.spin(forward, 70, vex::velocityUnits::pct);
-  MoveDistancePID(fwd, 23, 50, 20, 0, 0.2, 0.5);
+  MoveDistancePID(fwd, 8.8, 50, 20, 0, 0.2, 0.5); //23
 
   // turn
   if (!r)
