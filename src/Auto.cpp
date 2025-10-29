@@ -146,8 +146,35 @@ void go_side() {
   Bucket_to_Bridge();
 }
 
+void only_bridge(){
+  moveTime(reverse, 50, 1200);
+  Export.spin(fwd, 100, vex::velocityUnits::pct);
+  Intake.spin(forward, 100, vex::velocityUnits::pct);
+  Intake2.spin(forward, 100, vex::velocityUnits::pct);
+  for (int i = 0; i < 4; i++) {
+    L.spinFor(fwd, 50, deg, 100, vex::velocityUnits::pct, false);
+    R.spinFor(reverse, 90, deg, 100, vex::velocityUnits::pct);
+    L.spinFor(reverse, 90, deg, 100, vex::velocityUnits::pct, false);
+    R.spinFor(fwd, 50, deg, 100, vex::velocityUnits::pct);
+  }
+  moveTime(reverse, 100, 400);
+  wait(0.6, sec);
+  Intake.stop();
+  Intake2.stop();
+  Export.stop();
+}
+
+void picked2sided(){
+  smartTurn(225, 0.47, 0.05, 0.01);
+  MoveDistancePID(fwd, 35.3, 50, 15, 225, 0.2, 0.5);
+  smartTurn(180, 0.47, 0.05, 0.01);
+  only_bridge();
+}
+
 void Auto() {
   initcar();
-  go_straight();
-  go_side();
+  start2picked();
+  picked2sided();
+  // go_straight();
+  // go_side();
 }
