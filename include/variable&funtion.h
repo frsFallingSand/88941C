@@ -27,6 +27,7 @@ extern void init();
 extern void Right();
 extern void Left();
 extern void Auto();
+extern void Skill();
 
 
 //运动函数
