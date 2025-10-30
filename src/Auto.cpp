@@ -172,6 +172,8 @@ void picked2sided(){
 }
 
 void Auto() {
+  skill();
+  return;
   initcar();
   start2picked();
   picked2sided();
