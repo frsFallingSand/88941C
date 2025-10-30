@@ -27,8 +27,12 @@ extern void init();
 extern void Right();
 extern void Left();
 extern void Auto();
-extern void skill();
+extern void Skill();
 
+extern void intakefuntion();
+extern void intakestop();
+extern void intake_import();
+extern float Imu_calibrate_startstime;
 
 //运动函数
 extern void smartTurn(double targetAngle,double kP,double kI,double kD);

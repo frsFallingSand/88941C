@@ -1,3 +1,4 @@
+#include <vex.h>
 
 void intakefuntion(){
   Intake.spin(forward,100,vex::velocityUnits::pct);
@@ -18,7 +19,7 @@ void intake_import(){
 
 
 float Imu_calibrate_startstime=0;
-void skill(){
+void Skill(){
   wait(3,sec);
   Intake.spin(forward,100,vex::velocityUnits::pct);
   Intake2.spin(forward,60,vex::velocityUnits::pct);
