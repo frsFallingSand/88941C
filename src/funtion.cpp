@@ -24,6 +24,7 @@ double D = 0;
 // KD-防止抖动 (0.1-0.4)
 void smartTurn(double targetAngle, double kP, double kI, double kD) {
   // 重置变量
+  kI = 0.017;
   double error = 0;
   double prevError = 0;
   double integral = 0;
@@ -48,7 +49,7 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
     if (error < -180)
       error += 360;
     if (fabs(error) < 15 && ck) {
-      kP *= 0.7;
+      kP *= 0.6;
       ck = 0;
     }
     // ====== PID部分 ======
@@ -63,8 +64,8 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
     } else {
       integral = 0;
     }
-    if (fabs(integral) > 3000)
-      integral = 3000 * (integral > 0 ? 1 : -1);
+    if (fabs(integral) > 2000)
+      integral = 2000 * (integral > 0 ? 1 : -1);
     I = kI * integral;
     // D项
     D = kD * (error - prevError);
