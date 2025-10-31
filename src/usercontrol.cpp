@@ -3,8 +3,8 @@
 // 用户控制函数：在操作手控制阶段（User Control Period）被主程序循环调用
 void usercontrol() {
   // 设置左右驱动电机的停止方式为“刹车”（brake），防止松手后惯性滑行
-  L.setStopping(brake);
-  R.setStopping(brake);
+  L.setStopping(coast);
+  R.setStopping(coast);
 
   /*……………………………………………………………………………………………………*/
   // 以下被注释掉的代码是用于路径规划（贝塞尔曲线）的调试部分，当前未启用
