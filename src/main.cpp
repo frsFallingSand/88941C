@@ -153,22 +153,6 @@ int main() {
   thread Inertialinit(init);
   Competition.autonomous(Left);
   Competition.drivercontrol(usercontrol);
-  // if (t){
-  //   test();
-  // }
-  // mode = "left";
-  // if (mode == "left"){
-  //   Competition.autonomous(Left);
-  //   Competition.drivercontrol(usercontrol);
-  // }
-  // if (mode == "right"){
-  //   Competition.autonomous(Right);
-  //   Competition.drivercontrol(usercontrol);
-  // }
-  // if (mode == "auto"){
-  //   Competition.autonomous(Auto);
-  //   Competition.drivercontrol(usercontrol);
-  // }
 
   pre_auton();
   while (true) {

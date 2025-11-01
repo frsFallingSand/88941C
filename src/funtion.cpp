@@ -24,7 +24,7 @@ double D = 0;
 // KD-防止抖动 (0.1-0.4)
 void smartTurn(double targetAngle, double kP, double kI, double kD) {
   // 重置变量
-  kI = 0.017;
+  kI = 0.016;
   double error = 0;
   double prevError = 0;
   double integral = 0;
@@ -64,8 +64,8 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
     } else {
       integral = 0;
     }
-    if (fabs(integral) > 2000)
-      integral = 2000 * (integral > 0 ? 1 : -1);
+    if (fabs(integral) > 3000)
+      integral = 3000 * (integral > 0 ? 1 : -1);
     I = kI * integral;
     // D项
     D = kD * (error - prevError);
@@ -504,3 +504,26 @@ double getSmoothTargetVelocity(double current_distance, double total_distance,
   // 确保速度非负
   return std::max(0.0, velocity);
 }
+
+
+void Occupying_the_scoring_zone(){
+  L.setStopping(hold);
+  R.setStopping(hold);
+  L.spinFor(fwd,100,deg,40,vex::velocityUnits::pct,false);
+  R.spinFor(fwd,650,deg,40,vex::velocityUnits::pct);
+  Double_hook.set(true);
+  wait(50,msec);
+  L.spinFor(reverse,250,deg,40,vex::velocityUnits::pct,false);
+  R.spinFor(reverse,700,deg,40,vex::velocityUnits::pct);
+  wait(50,msec);
+
+  L.setStopping(brake);
+  R.setStopping(brake);
+  
+  L.spin(reverse,50,vex::velocityUnits::pct);
+  R.spin(reverse,50,vex::velocityUnits::pct);
+  wait(250,msec);
+  Double_hook.set(false);
+  L.spinFor(reverse,750,deg,100,vex::velocityUnits::pct,false);
+  R.spinFor(reverse,750,deg,100,vex::velocityUnits::pct);
+  }

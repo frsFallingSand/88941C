@@ -22,11 +22,12 @@ extern void IMU_Display(); //惯性传感器数值绘图
 extern void feedforward_kV();
 extern void feedforward_kA();
 extern void init();
+extern void Occupying_the_scoring_zone();
 
 //自动函数
 extern void Right();
 extern void Left();
-extern void Auto();
+// extern void Auto();
 extern void Skill();
 
 
