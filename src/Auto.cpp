@@ -15,7 +15,8 @@ void lr_stop(){
   R.stop();
 }
 
-void Left(){
+void Left(){ //TODO: 包函数
+  Export.stop(hold);
   intake_start();
   //Export.spin(reverse,70,vex::velocityUnits::pct);
 
@@ -26,18 +27,19 @@ void Left(){
   wait(50,msec);
 
   // pick
-  MoveDistancePID(fwd,14,12,12,331,0.2,0.2);
+  MoveDistancePID(fwd,13.8,12,12,331,0.2,0.2);
   MoveDistancePID(reverse,4,30,10,331,0.2,-0.2);
 
-
+  ///
 
   // go to center
   smartTurn(224 , 0.48 , 0.07, 0.01);
   MoveDistancePID(reverse,13.5,40,10,224,0.2,-0.3);
 
   // push center
+  Export.setStopping(coast);
   Intake2.stop();//关闭intake2，防止多余球入中桥
-  Export.spin(reverse,90,vex::velocityUnits::pct);
+  Export.spin(reverse,80,vex::velocityUnits::pct);
   //退后顶中桥吐球
   L.spin(reverse,5,vex::velocityUnits::pct);
   R.spin(reverse,5,vex::velocityUnits::pct);
@@ -45,16 +47,19 @@ void Left(){
   Export.stop();
   lr_brake();
 
-
+  ///
 
   // go to side
   // push side
-  MoveDistancePID(fwd,49,55,15,226,0.2,0.4);
+  MoveDistancePID(fwd,49.8,55,15,226,0.2,0.4);
+  wait(100,msec);
   smartTurn(180 , 0.48 , 0.05 , 0.16);
   Bucket_to_Bridge();
   // DigitalOutF.set(true);
   Occupying_the_scoring_zone();
   lr_stop();
+
+  // 要求：停止时位于正方向
 }
 
 

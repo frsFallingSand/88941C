@@ -265,7 +265,7 @@ void Double_hook_released() { Double_hook_state = 1; }
 // ==============================================================================
 void Bucket_to_Bridge() {
   front_panel.set(true);
-  wait(50, msec);
+  wait(100, msec);
   Intake.spin(forward, 100, vex::velocityUnits::pct);
   Intake2.spin(forward, 100, vex::velocityUnits::pct);
   moveTime(fwd, 40, 700);
@@ -520,10 +520,10 @@ void Occupying_the_scoring_zone(){
   L.setStopping(brake);
   R.setStopping(brake);
   
-  L.spin(reverse,50,vex::velocityUnits::pct);
-  R.spin(reverse,50,vex::velocityUnits::pct);
+  L.spin(reverse,40,vex::velocityUnits::pct);
+  R.spin(reverse,40,vex::velocityUnits::pct);
   wait(250,msec);
   Double_hook.set(false);
-  L.spinFor(reverse,750,deg,100,vex::velocityUnits::pct,false);
-  R.spinFor(reverse,750,deg,100,vex::velocityUnits::pct);
+  L.spinFor(reverse,750,deg,50,vex::velocityUnits::pct,false);
+  R.spinFor(reverse,750,deg,50,vex::velocityUnits::pct);
   }
