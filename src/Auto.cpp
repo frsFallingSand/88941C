@@ -75,12 +75,12 @@ void Right(){
   wait(50,msec);
 
   // pick
-  MoveDistancePID(fwd,14,12,12,29,0.2,0.2);
+  MoveDistancePID(fwd,14.5,12,12,29,0.2,0.2);
   MoveDistancePID(reverse,6,30,10,29,0.2,-0.2);
   Intake.setStopping(hold);
   Intake2.spin(reverse,100,vex::velocityUnits::pct);
 
-
+  ///
 
   // go to center
   smartTurn(-46 , 0.48 , 0.07, 0.01);
@@ -93,7 +93,7 @@ void Right(){
   Intake2.stop();//关闭intake2，防止多余球入中桥
   Intake.setStopping(coast);
 
-
+  ///
 
   // go to side
   // push side
