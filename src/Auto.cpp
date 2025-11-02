@@ -51,9 +51,10 @@ void Left(){ //TODO: 包函数
 
   // go to side
   // push side
-  MoveDistancePID(fwd,49.8,55,15,226,0.2,0.4);
-  wait(100,msec);
+  MoveDistancePID(fwd,50,55,15,226,0.2,0.4);
+  // wait(100,msec);
   smartTurn(180 , 0.48 , 0.05 , 0.16);
+  wait(100,msec);
   Bucket_to_Bridge();
   // DigitalOutF.set(true);
   Occupying_the_scoring_zone();
