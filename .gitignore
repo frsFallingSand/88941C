@@ -1,4 +1,5 @@
 /bin
 /build
+/src/*.txt
 compile_commands.json
 *.kra
