@@ -11,8 +11,10 @@ void imu_init(){
 }
 
 void intakefuntion(){
+  Export.stop(hold);
+  Export.spin(fwd,0.5,vex::velocityUnits::pct);
   Intake.spin(forward,100,vex::velocityUnits::pct);
-  Intake2.spin(forward,100,vex::velocityUnits::pct);
+  Intake2.spin(forward,65,vex::velocityUnits::pct);
 }
 
 void intakestop(){
@@ -22,202 +24,258 @@ void intakestop(){
 }
 
 void intake_import(){
-  Intake.spin(forward,100,vex::velocityUnits::pct);
-  Intake2.spin(forward,70,vex::velocityUnits::pct);
+  Export.stop(coast);
+  //Export.spin(forward,100,vex::velocityUnits::pct);
+  Intake2.spin(reverse,100,vex::velocityUnits::pct);//反转
   Export.spin(forward,100,vex::velocityUnits::pct);
+  wait(70,msec);
+  Intake2.stop();
+  Intake2.spin(forward,70,vex::velocityUnits::pct);
+  Intake.spin(forward,100,vex::velocityUnits::pct); 
+}
+
+
+void moveStop(){
+  L.stop();
+  R.stop();
 }
 
 
 void Skill(){
-    imu_init();
+  float times = Brain.Timer.value();
+  intakefuntion();
+  MoveDistancePID(fwd,10,30,20,0,0.2,0.2);
+  R.spinFor(forward,1.2,turns,30,vex::velocityUnits::pct);
+  L.stop(brake);
+  R.stop(brake);
+  wait(50,msec);
+  MoveDistancePID(fwd,13,12,12,331,0.2,0.2);
+  //MoveDistancePID(reverse,3.5,30,10,331,0.2,-0.2);
+  smartTurn(225 , 0.48 , 0.03, 0.01);
+  MoveDistancePID(fwd,26.5,50,50,225,0.2,0.2);
+  smartTurn(180 , 0.48 , 0.03, 0.01);
+  //MoveDistancePID(reverse,7,50,50,180,0.2,0.2);
+  moveTime(reverse,30,600);
+  Export.setStopping(coast);
+  intake_import();
+  //转动后退，确保卡到长桥
+  for(int i=0;i<2;i++){
+    L.spinFor(fwd,40,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(reverse,80,deg,100,vex::velocityUnits::pct);
+    L.spinFor(reverse,80,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(fwd,40,deg,100,vex::velocityUnits::pct);
+  }
+  wait(0.6,sec);
+  front_panel.set(true);
+  //退后顶桥
+  moveTime(reverse,100,200);
+  intakestop();
+  intakefuntion();
+  MoveDistancePID(fwd,17,60,50,180,0.2,0.2);
+  moveTime(fwd,30,700);
+  //拿1桶
+  wait(0.8,sec);
+  move(reverse,80,10);
+  moveTime(fwd,20,200);
 
+  MoveDistancePID(reverse,5,60,50,180,0.2,-0.2);
+  front_panel.set(false);
+  L.spinFor(reverse,700,deg,40,vex::velocityUnits::pct);
+  L.stop(brake);
+  R.stop(brake);
+  wait(50,msec);
+  L.spinFor(reverse,600,deg,50,vex::velocityUnits::pct,false);
+  R.spinFor(reverse,1050,deg,50,vex::velocityUnits::pct);
+  
+  //退后到2桶的位置
+  intakestop();
+  MoveDistancePID(reverse,66,80,60,180,0.2,-0.5);
+  smartTurn(-90 , 0.49 , 0.03, 0.01);
+
+  
+  //靠墙定位，陀螺仪改0
+  moveTime(fwd,30,500);
+  wait(100,msec);
+  IMU.setHeading(0,deg);
+  wait(50,msec);
+  MoveDistancePID(reverse,12.5,40,20,0,0.2,-0.4);
+  intakestop();
+  smartTurn(90 , 0.49 , 0.03, 0.01);
+  wait(100,msec);
+  moveTime(reverse,50,800);
+  Export.setStopping(coast);
+  //导入球
+  intake_import();
+  //转动后退，确保卡到长桥
+  for(int i=0;i<2;i++){
+    L.spinFor(fwd,40,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(reverse,80,deg,100,vex::velocityUnits::pct);
+    L.spinFor(reverse,80,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(fwd,40,deg,100,vex::velocityUnits::pct);
+  }
+  moveTime(reverse,100,300);
   wait(1,sec);
-  
-  Intake.spin(forward,100,vex::velocityUnits::pct);
-  Intake2.spin(forward,60,vex::velocityUnits::pct);
-  MoveDistancePID(fwd,10.5,35,20,0,0.2,0.2);
-  R.spinFor(forward,1.2,turns,40,vex::velocityUnits::pct);
-  L.stop(brake);
-  R.stop(brake);
-  wait(50,msec);
-  MoveDistancePID(fwd,14,30,20,333,0.2,0.2);
-  wait(50,msec);
-  MoveDistancePID(reverse,3.5,30,10,333,0.2,-0.2);
-  //指向1桶
-  smartTurn(225 , 0.49 , 0.019, 0.01);
-  MoveDistancePID(fwd,34.5,55,20,225,0.2,0.4);
-  wait(50,msec);
-  intakestop();
-  smartTurn(180 , 0.49 , 0.019 , 0.01);
-
-
   front_panel.set(true);
-  //Intake2.spin(reverse,100,pct);
-  wait(50,msec);
-  //Intake2.stop();
-  intakefuntion();
-  moveTime(fwd,40,500);
-  L.spin(fwd,2,pct);
-  R.spin(fwd,2,pct);
-  wait(1.3,sec);
-  L.stop(brake);
-  R.stop(brake);
-  wait(0.2,sec);
-  MoveDistancePID(reverse,26,40,40,180,0.2,-0.4);
-  Intake2.spin(reverse,100,pct);
-  moveTime(reverse,70,200);
+  moveTime(reverse,100,300);
+  // //退后顶桥
   intakestop();
-  intake_import();
-  for(int i=0;i<2;i++){
-    L.spinFor(fwd,40,deg,100,vex::velocityUnits::pct,false);
-    R.spinFor(reverse,50,deg,100,vex::velocityUnits::pct);
-    L.spinFor(reverse,50,deg,100,vex::velocityUnits::pct,false);
-    R.spinFor(fwd,40,deg,100,vex::velocityUnits::pct);
-  }
-  
-  L.spin(reverse,100,pct);
-  R.spin(reverse,100,pct);
-  wait(2.2,sec);
-  move(fwd,200,30);
-  wait(100,msec);
-  front_panel.set(false);
-  moveTime(reverse,20,400);
-  wait(100,msec);
-
-
-  MoveDistancePID(fwd,15,50,8,180,0.2,-0.5);
-  wait(50,msec);
-  L.spinFor(reverse,600,deg,40,vex::velocityUnits::pct);
-  L.stop(brake);
-  R.stop(brake);
-  wait(50,msec);
-  L.spinFor(reverse,450,deg,40,vex::velocityUnits::pct,false);
-  R.spinFor(reverse,1000,deg,40,vex::velocityUnits::pct);
-  intakestop();
-  MoveDistancePID(reverse,74,80,15,180,0.2,-0.5);
-  R.spinFor(fwd,1400,deg,40,vex::velocityUnits::pct);
-  //靠墙定位
-  moveTime(reverse,40,700);
-  wait(200,msec);
-  IMU.setHeading(0,deg);
-  wait(100,msec);
-  MoveDistancePID(fwd,14,40,15,0,0.2,0.5);
-  smartTurn(-90 , 0.48 , 0.018 , 0.01);
-
-  // //拿2桶
-  front_panel.set(true);
-  wait(100,msec);
   intakefuntion();
-  MoveDistancePID(fwd,10,40,20,270,0.2,0.2);
-  moveTime(fwd,15,800);
-  wait(1.3,sec);
-  intakestop();
-  front_panel.set(false);
-  MoveDistancePID(reverse,9,40,20,270,0.2,-0.2);
-  smartTurn(45 , 0.48 , 0.018, 0.01);
-  intakefuntion();
-  MoveDistancePID(fwd,32,50,30,45,0.2,0.3);
-  smartTurn(0 , 0.48 , 0.018, 0.01);
-  MoveDistancePID(fwd,38.5,70,30,0,0.2,0.3);
-  smartTurn(315 , 0.48 , 0.018, 0.01);
-  MoveDistancePID(reverse,8,40,20,315,0.2,-0.2);
-  Intake2.spin(reverse,100,vex::velocityUnits::pct);
-  moveTime(reverse,20,600);
-  //导入中桥
-  intakefuntion();
-  Export.spin(reverse,40,vex::velocityUnits::pct);
+
+  MoveDistancePID(fwd,17,60,50,90,0.2,0.2);
+  moveTime(fwd,30,750);
+  //拿2桶
   wait(1,sec);
-  Export.spin(reverse,30,vex::velocityUnits::pct);
-  wait(1.5,sec);
-  wait(200,msec);
+  move(reverse,80,10);
+  moveTime(fwd,20,200);
 
-  R.spinFor(fwd,1600,deg,80,vex::velocityUnits::pct,false);
-  L.spinFor(fwd,2200,deg,80,vex::velocityUnits::pct);  
-  intakestop();
-  moveTime(fwd,40,1200);
-  wait(100,msec);
-  IMU.setHeading(0,deg);
-  wait(100,msec);
-
-  //去3桶位置
-  MoveDistancePID(reverse,9,55,15,0,0.2,-0.4);
-  smartTurn(270 , 0.47 , 0.018 , 0.16);
-  front_panel.set(true);
-  wait(100,msec);
-  intakefuntion();
-  moveTime(fwd,40,700);
-  // L.spin(fwd,2,pct);
-  // R.spin(fwd,2,pct);
-  wait(1.2,sec);
-  L.stop(brake);
-  R.stop(brake);
-  wait(0.2,sec);
-  MoveDistancePID(reverse,5,30,15,270,0.2,-0.5);
-
-  front_panel.set(false);
-  wait(100,msec);
-  
-  L.spinFor(reverse,450,deg,40,vex::velocityUnits::pct);
-  wait(100,msec);
-  L.spinFor(reverse,700,deg,40,vex::velocityUnits::pct,false);
-  R.spinFor(reverse,1200,deg,40,vex::velocityUnits::pct);  
-  intakestop();
-
-  MoveDistancePID(reverse,76,80,15,270,0.2,-0.5);
-  R.spinFor(fwd,1000,deg,40,vex::velocityUnits::pct);
-  // //靠墙定位
-  moveTime(reverse,40,700);
-  wait(100,msec);
-  IMU.setHeading(0,deg);
-  wait(100,msec);
-  //四桶
-
-  MoveDistancePID(fwd,12,30,15,0,0.2,0.5);
-  smartTurn(270 , 0.49 , 0.02 , 0.16);
-  moveTime(reverse,60,700);
+  MoveDistancePID(reverse,17,60,50,90,0.2,-0.2);
+  moveTime(reverse,30,650);
   intake_import();
-  for(int i=0;i<2;i++){
-    L.spinFor(fwd,40,deg,100,vex::velocityUnits::pct,false);
-    R.spinFor(reverse,50,deg,100,vex::velocityUnits::pct);
-    L.spinFor(reverse,50,deg,100,vex::velocityUnits::pct,false);
-    R.spinFor(fwd,40,deg,100,vex::velocityUnits::pct);
-  }
-  L.spin(reverse,100,vex::velocityUnits::pct);
-  R.spin(reverse,100,vex::velocityUnits::pct);
-  wait(1.2,sec);
-  L.stop();
-  R.stop();
-
-  intakestop();
-  front_panel.set(true);
-  intakefuntion();
-  MoveDistancePID(fwd,24,50,20,270,0.2,0.4);
-  moveTime(fwd,20,600);
-  wait(0.9,sec);
-
-  MoveDistancePID(reverse,26,40,20,270,0.2,-0.4);
-  Intake2.spin(reverse,100,pct);
-  moveTime(reverse,70,200);
-  intakestop();
-  intake_import();
-  for(int i=0;i<2;i++){
-    L.spinFor(fwd,40,deg,100,vex::velocityUnits::pct,false);
-    R.spinFor(reverse,50,deg,100,vex::velocityUnits::pct);
-    L.spinFor(reverse,50,deg,100,vex::velocityUnits::pct,false);
-    R.spinFor(fwd,40,deg,100,vex::velocityUnits::pct);
-  }
-//   DigitalOutF.set(true);
-  front_panel.set(false);
-  L.spin(reverse,100,pct);
-  R.spin(reverse,100,pct);
   wait(2,sec);
+  moveStop();
+  front_panel.set(false);
+  //Expor回转一下，在正转，让最后一个球导入
+  // Export.spinFor(reverse,100,deg,50,vex::velocityUnits::pct);
+  // Export.spin(fwd,100,vex::velocityUnits::pct);
+  moveTime(reverse,100,200);
+  wait(100,msec);
+  intakestop();
+
+
   
-  L.spin(fwd,60,pct);
-  R.spin(fwd,40,pct);
-  wait(1.5,sec);
-  L.spin(fwd,100,pct);
-  R.spin(fwd,100,pct);
-  wait(0.5,sec);
-  L.stop();
-  R.stop();
+  MoveDistancePID(fwd,13,50,40,90,0.2,0.2);
+  intakefuntion();
+  smartTurn(215 , 0.49 , 0.03, 0.01);
+  MoveDistancePID(fwd,35,40,30,215,0.2,0.2);
+  smartTurn(165 , 0.49 , 0.03, 0.01);
+  MoveDistancePID(fwd,77,80,70,160,0.2,0.2);
+  //smartTurn(180 , 0.48 , 0.03, 0.01);  //前进过去已经接近90度，没有不要在走一此转向
+
+  moveTime(fwd,30,400);
+  wait(50,msec);
+  IMU.setHeading(0,deg);
+  wait(50,msec);
+  MoveDistancePID(reverse,12.5,40,20,0,0.2,-0.4);
+  intakestop();
+  smartTurn(-90 , 0.49 , 0.03, 0.01);
+  wait(100,msec);
+  moveTime(reverse,60,700);
+  Export.setStopping(coast);
+  //导入球
+  intake_import();
+  //转动后退，确保卡到长桥
+  for(int i=0;i<2;i++){
+    L.spinFor(fwd,40,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(reverse,80,deg,100,vex::velocityUnits::pct);
+    L.spinFor(reverse,80,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(fwd,40,deg,100,vex::velocityUnits::pct);
+  }
+  moveTime(reverse,100,300);
+  wait(0.8,sec);
+  front_panel.set(true);
+  // //退后顶桥
+  intakestop();
+  intakefuntion();
+
+  MoveDistancePID(fwd,17,60,50,270,0.2,0.2);
+  moveTime(fwd,30,700);
+  //拿3桶
+  wait(0.8,sec);
+  move(reverse,80,10);
+  moveTime(fwd,20,200);
+
+  MoveDistancePID(reverse,6,60,50,270,0.2,-0.2);
+  front_panel.set(false);
+  L.spinFor(reverse,650,deg,40,vex::velocityUnits::pct);
+  L.stop(brake);
+  R.stop(brake);
+  wait(50,msec);
+  L.spinFor(reverse,550,deg,50,vex::velocityUnits::pct,false);
+  R.spinFor(reverse,1050,deg,50,vex::velocityUnits::pct);
+  
+  //退后到4桶的位置
+  intakestop();
+  MoveDistancePID(reverse,68,80,50,270,0.2,-0.5);
+  smartTurn(0 , 0.49 , 0.03, 0.01);
+
+  
+  //靠墙定位，陀螺仪改0
+  moveTime(fwd,30,500);
+  wait(100,msec);
+  IMU.setHeading(0,deg);
+  wait(100,msec);
+  MoveDistancePID(reverse,12.5,40,20,0,0.2,-0.4);
+  smartTurn(90 , 0.49 , 0.03, 0.01);
+  wait(100,msec);
+  moveTime(reverse,60,800);
+
+  Export.setStopping(coast);
+  //导入球
+  intake_import();
+  //转动后退，确保卡到长桥
+  for(int i=0;i<3;i++){
+    L.spinFor(fwd,40,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(reverse,80,deg,100,vex::velocityUnits::pct);
+    L.spinFor(reverse,80,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(fwd,40,deg,100,vex::velocityUnits::pct);
+  }
+  moveTime(reverse,100,200);
+  wait(1,sec);
+  front_panel.set(true);
+  // //退后顶桥
+  intakestop();
+  intakefuntion();
+
+  MoveDistancePID(fwd,17,60,50,90,0.2,0.2);
+  moveTime(fwd,30,650);
+  //拿4桶
+  wait(1,sec);
+  move(reverse,80,10);
+  moveTime(fwd,20,200);
+
+  MoveDistancePID(reverse,17,60,50,90,0.2,-0.2);
+  moveTime(reverse,50,650);
+  for(int i=0;i<2;i++){
+    L.spinFor(fwd,30,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(reverse,80,deg,100,vex::velocityUnits::pct);
+    L.spinFor(reverse,80,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(fwd,30,deg,100,vex::velocityUnits::pct);
+  }
+  intake_import();
+  wait(2,sec);
+  moveTime(reverse,100,200);
+  ////Expor回转一下，在正转，让最后一个球导入
+  // Export.spinFor(reverse,100,deg,50,vex::velocityUnits::pct);
+  // Export.spin(fwd,100,vex::velocityUnits::pct);
+  wait(0.2,sec);
+  intakestop();
+  moveStop();
+  front_panel.set(false);
+  moveTime(reverse,100,300);
+
+  //吐空，贴边靠近停泊区
+  intakefuntion();
+  Export.spin(reverse,100,vex::velocityUnits::pct);
+  L.spinFor(fwd,3000,deg,65,vex::velocityUnits::pct,false);
+  R.spinFor(fwd,2100,deg,40,vex::velocityUnits::pct);
+  wait(50,msec);
+  move(fwd,150,60);
+  intakestop();
+  moveStop();
+  //停车
+  intakefuntion();
+  Export.spin(reverse,100,vex::velocityUnits::pct);
+  front_panel.set(true);
+  wait(200,msec);
+  move(fwd,1800,60);
+  front_panel.set(false);
+  //intakestop();
+  moveStop();
+  
+
+
+  Controller1.Screen.clearScreen();
+  Controller1.Screen.setCursor(2,4);
+  Controller1.Screen.print(Brain.Timer.value()-times);
+  wait(5,sec);
 }

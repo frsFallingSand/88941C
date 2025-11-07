@@ -21,7 +21,7 @@ inertial IMU = inertial(PORT10);
 motor Intake2 = motor(PORT1, ratio18_1, true);
 digital_out front_panel = digital_out(Brain.ThreeWirePort.A);
 digital_out Double_hook = digital_out(Brain.ThreeWirePort.B);
-digital_out Lift_it_up = digital_out(Brain.ThreeWirePort.H);
+digital_out Lift_it_up = digital_out(Brain.ThreeWirePort.C);
 rotation x = rotation(PORT15, true);
 rotation y = rotation(PORT5, true);
 

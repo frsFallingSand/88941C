@@ -49,7 +49,7 @@ void smartTurn(double targetAngle, double kP, double kI, double kD) {
     if (error < -180)
       error += 360;
     if (fabs(error) < 15 && ck) {
-      kP *= 0.6;
+      kP *= 0.7;
       ck = 0;
     }
     // ====== PID部分 ======
@@ -270,25 +270,22 @@ void Bucket_to_Bridge() {
   Intake2.spin(forward, 100, vex::velocityUnits::pct);
   moveTime(fwd, 40, 700);
   // move(reverse, 5, 20);
-  wait(1.2, sec);
-  moveTime(reverse, 50, 1200);
-  Export.spin(fwd, 100, vex::velocityUnits::pct);
-  Intake.spin(reverse, 100, vex::velocityUnits::pct);
-  Intake2.spin(reverse, 100, vex::velocityUnits::pct);
-  wait(500, msec);
-  Intake.stop();
-  Intake2.stop();
-  Intake.spin(forward, 100, vex::velocityUnits::pct);
-  Intake2.spin(forward, 100, vex::velocityUnits::pct);
-  front_panel.set(false);
-  for (int i = 0; i < 4; i++) {
-    L.spinFor(fwd, 50, deg, 100, vex::velocityUnits::pct, false);
-    R.spinFor(reverse, 90, deg, 100, vex::velocityUnits::pct);
-    L.spinFor(reverse, 90, deg, 100, vex::velocityUnits::pct, false);
-    R.spinFor(fwd, 50, deg, 100, vex::velocityUnits::pct);
+  wait(0.5, sec);
+  MoveDistancePID(reverse,20,70,15,180,0.2,-0.5);
+  Intake2.spinFor(reverse,150,deg,100,vex::velocityUnits::pct,false);
+  Export.spin(fwd,100,vex::velocityUnits::pct);
+  moveTime(reverse,60,400);
+  Intake.spin(forward,100,vex::velocityUnits::pct);
+  Intake2.spin(forward,100,vex::velocityUnits::pct);
+  for(int i=0;i<2;i++){
+    L.spinFor(fwd,40,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(reverse,80,deg,100,vex::velocityUnits::pct);
+    L.spinFor(reverse,80,deg,100,vex::velocityUnits::pct,false);
+    R.spinFor(fwd,40,deg,100,vex::velocityUnits::pct);
   }
-  moveTime(reverse, 100, 400);
-  wait(0.6, sec);
+  front_panel.set(false);
+  moveTime(reverse,100,500);
+  wait(0.7,sec);
   Intake.stop();
   Intake2.stop();
   Export.stop();
@@ -520,9 +517,9 @@ void Occupying_the_scoring_zone(){
   L.setStopping(brake);
   R.setStopping(brake);
   
-  L.spin(reverse,40,vex::velocityUnits::pct);
-  R.spin(reverse,40,vex::velocityUnits::pct);
-  wait(250,msec);
+  L.spin(reverse,50,vex::velocityUnits::pct);
+  R.spin(reverse,50,vex::velocityUnits::pct);
+  wait(300,msec);
   Double_hook.set(false);
   L.spinFor(reverse,750,deg,50,vex::velocityUnits::pct,false);
   R.spinFor(reverse,750,deg,50,vex::velocityUnits::pct);
