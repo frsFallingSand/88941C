@@ -210,15 +210,11 @@ void moveTime(vex::directionType dir, double sp, double times) {
   R.stop(brake);
 }
 
-// ==============================================================================
-// 前挡板控制（单次按键切换状态）
-// 使用状态标志防止按键持续触发
-// ==============================================================================
+
 bool front_panel_state = 1; // 1=可触发，0=已触发（防抖）
 int front_panel_cnt = 0;    // 切换计数器（偶数开，奇数关）
 
 void front_panel_control() {
-  // if (front_panel_state == 1) {  // 仅在松开后首次按下时执行
   front_panel_state = 0; // 锁定状态
   if (front_panel_cnt % 2 == 0) {
     front_panel.set(true); // 打开挡板
@@ -226,20 +222,15 @@ void front_panel_control() {
     front_panel.set(false); // 关闭挡板
   }
   front_panel_cnt++;
-  // }
 }
 
 // 按键松开时重置状态，允许下次触发
 void front_panel_released() { front_panel_state = 1; }
 
-// ==============================================================================
-// 双边钩子控制（逻辑同前挡板）
-// ==============================================================================
 bool Double_hook_state = 1;
 int Double_hook_cnt = 0;
 
 void Double_hook_control() {
-  // if (Double_hook_state == 1) {
   Double_hook_state = 0;
   if (Double_hook_cnt % 2 == 0) {
     Double_hook.set(true);
@@ -247,22 +238,11 @@ void Double_hook_control() {
     Double_hook.set(false);
   }
   Double_hook_cnt++;
-  // }
 }
 
 void Double_hook_released() { Double_hook_state = 1; }
 
-// ==============================================================================
-// 自动化任务：从得分区运球到桥区（Push Back 比赛策略）
-// 流程：
-//   1. 打开前挡板
-//   2. 启动滚筒进球
-//   3. 向前冲一段
-//   4. 后退微调
-//   5. 后退至桥区（带 IMU 纠偏）
-//   6. 抬升机构 + 反向吐球
-//   7. 复位
-// ==============================================================================
+
 void Bucket_to_Bridge() {
   front_panel.set(true);
   wait(100, msec);
@@ -322,13 +302,7 @@ void Bucket_to_Bridge_rdiff() {
   Export.stop();
 }
 
-// ==============================================================================
-// 简化版 PID 转向函数（使用电压控制而非百分比）
-// 参数：
-//   t：目标角度
-//   kp, ki, kd：PID 参数（注意 kd 未使用！）
-//   minVolt：最低有效电压（防止电机堵转）
-// ==============================================================================
+
 void pid(double t, double kp, double ki, double kd, double minVolt) {
   double firsttime = 0;
   double sumi = 0; // 积分累计

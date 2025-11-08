@@ -15,7 +15,7 @@ void lr_stop(){
   R.stop();
 }
 
-void Left(){ //TODO: 包函数
+void Left(){
   Export.stop(hold);
   intake_start();
   //Export.spin(reverse,70,vex::velocityUnits::pct);
