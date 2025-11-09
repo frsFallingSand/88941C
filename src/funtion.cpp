@@ -248,7 +248,7 @@ void Bucket_to_Bridge() {
   wait(100, msec);
   Intake.spin(forward, 100, vex::velocityUnits::pct);
   Intake2.spin(forward, 100, vex::velocityUnits::pct);
-  moveTime(fwd, 40, 700);
+  moveTime(fwd, 30, 950);
   // move(reverse, 5, 20);
   wait(0.5, sec);
   MoveDistancePID(reverse,20,70,15,180,0.2,-0.5);
