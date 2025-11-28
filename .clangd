@@ -1,0 +1,31 @@
+# .clangd
+CompileFlags:
+  Add:
+    [
+      -I./include,
+      -I/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/include,
+      -I/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/clang/8.0.0/include,
+      -I/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/gcc/include/c++/4.9.3,
+      -I/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/gcc/include/c++/4.9.3/arm-none-eabi/armv7-ar/thumb,
+      -I/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/gcc/include,
+      --target=thumbv7-none-eabi,
+      -DVexV5,
+      -std=gnu++11,
+      -fno-rtti,
+      -fno-exceptions,
+      -fno-threadsafe-statics,
+      -nostdinc++,
+      -nostdinc,
+    ]
+  # 强制 clangd 不搜索系统路径
+  Compiler: clang
+
+# 告诉 clangd 头文件在哪里
+# 注意：路径必须是绝对路径或相对于项目根
+#IncludeDirs:
+#  - "./include"
+#  - "/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/include"
+#  - "/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/clang/8.0.0/include"
+#  - "/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/gcc/include/c++/4.9.3"
+#  - "/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/gcc/include/c++/4.9.3/arm-none-eabi/armv7-ar/thumb"
+#  - "/home/fgsd/.config/Code - OSS/User/globalStorage/vexrobotics.vexcode/sdk/cpp/V5/V5_20240802_15_00_00/vexv5/gcc/include"

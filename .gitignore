@@ -3,3 +3,4 @@
 /src/*.txt
 compile_commands.json
 *.kra
+/.cache
