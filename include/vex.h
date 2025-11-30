@@ -19,25 +19,27 @@
 #include "variable&funtion.h"
 
 #define waitUntil(condition)                                                   \
-  do {                                                                         \
-    wait(5, msec);                                                             \
-  } while (!(condition))
+    do {                                                                       \
+        wait(5, msec);                                                         \
+    } while (!(condition))
 
 #define repeat(iterations)                                                     \
-  for (int iterator = 0; iterator < iterations; iterator++)
-
-
-
+    for (int iterator = 0; iterator < iterations; iterator++)
 
 // 点结构体
 struct Point {
     double x, y;
     Point(double x = 0, double y = 0) : x(x), y(y) {}
+    Point operator+(const Point &p) const { return Point(x + p.x, y + p.y); }
 };
 
+inline Point operator*(double k, const Point &p) {
+    return Point(k * p.x, k * p.y);
+}
 
-//位姿结构体
+// 位姿结构体
 struct Pose {
     double x, y, theta;
-    Pose(double x = 0, double y = 0, double theta = 0) : x(x), y(y), theta(theta) {}
+    Pose(double x = 0, double y = 0, double theta = 0)
+        : x(x), y(y), theta(theta) {}
 };
