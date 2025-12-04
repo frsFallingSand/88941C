@@ -128,34 +128,89 @@
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
+#include "vex_global.h"
+#include <functional>
 #include <string>
+#include <vector>
 
 using namespace vex;
 competition Competition;
+
+struct Mode {
+    std::function<bool()> isPressed;
+    std::function<void()> actions;
+    const char *name;
+};
+
+std::vector<Mode> modes = {
+    {[] { return Controller1.ButtonL1.pressing(); }, R4l, "4 Left"},
+    {[] { return Controller1.ButtonL2.pressing(); }, R7l, "7 Left"},
+    {[] { return Controller1.ButtonR1.pressing(); }, R4r, "4 Right"},
+    {[] { return Controller1.ButtonR2.pressing(); }, R7r, "7 Right"},
+    {[] { return Controller1.ButtonLeft.pressing(); }, R4l, "9 Left"},
+    {[] { return Controller1.ButtonRight.pressing(); }, R4l, "9 Right"},
+    {[] { return Controller1.ButtonDown.pressing(); }, Rawp, "AWP(Right)"},
+    {[] { return Controller1.ButtonB.pressing(); }, Rsl, "Skill(Low)"},
+    {[] { return Controller1.ButtonX.pressing(); }, Rsh, "Skill(High)"}};
 
 int t = 0;
 std::string mode = "";
 
 void pre_auton(void) { vexcodeInit(); }
 
-int main() {
-  // 角度初始化
-  Controller1.Screen.clearScreen();
-  Brain.Screen.clearScreen();
-  IMU.calibrate();
-  while (IMU.isCalibrating()) {
-    Brain.Screen.setCursor(5, 5);
-    Controller1.Screen.setCursor(2, 4);
-    Controller1.Screen.print("Inertial is calibrate");
-    Brain.Screen.print("Inertial is calibrate");
-    wait(50, msec);
-  }
-  thread Inertialinit(init);
-  Competition.autonomous(Skill);
-  Competition.drivercontrol(usercontrol);
+void initImu() {
+    Controller1.Screen.clearScreen();
+    Brain.Screen.clearScreen();
+    IMU.calibrate();
+    while (IMU.isCalibrating()) {
+        Brain.Screen.setCursor(5, 5);
+        Controller1.Screen.setCursor(2, 4);
+        Controller1.Screen.print("Inertial is calibrate");
+        Brain.Screen.print("Inertial is calibrate");
+        wait(50, msec);
+    }
+}
 
-  pre_auton();
-  while (true) {
-    wait(100, msec);
-  }
+// X all
+// 4 9 7
+// l skill low r skill high
+// 注意！！ 程序没有对于多按键的特判
+void selector() {
+    int n = 100;
+    int counter = 0;
+    bool state = 0;
+    int index = -1;
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setPenColor(blue);
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("L/R Rod for L/R Placement");
+    Brain.Screen.setCursor(2, 1);
+    Brain.Screen.print("Up4 Left7 Right9");
+    Brain.Screen.setCursor(3, 1);
+    Brain.Screen.print("L1/R1 for high/low skill");
+    // while (counter <= n) {
+    while (1) {
+        for (int i = 0; i < modes.size(); i++) {
+            if (modes[i].isPressed()) {
+                index = i;
+                break;
+            }
+        }
+
+        wait(50, msec);
+    }
+}
+
+int main() {
+    // 角度初始化
+    initImu();
+    selector();
+    thread Inertialinit(init);
+    // Competition.autonomous(Skill);
+    // Competition.drivercontrol(usercontrol);
+    pre_auton();
+    while (true) {
+        wait(100, msec);
+    }
 }

@@ -64,3 +64,13 @@ extern Point bezierPoint(Point p0, Point p1, Point p2, Point p3,
 extern std::vector<Point> generateBezierPath(Point p0, Point p1, Point p2,
                                              Point p3, int num);
 extern void visualizePath(const std::vector<Point> &path);
+
+extern void R4l();
+extern void R4r();
+extern void R7l();
+extern void R7r();
+extern void R9l();
+extern void R9r();
+extern void Rawp();
+extern void Rsl();
+extern void Rsh();

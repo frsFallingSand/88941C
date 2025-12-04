@@ -1,3 +1,3 @@
 #include <vex.h>
 
-class ppc {}
+// class ppc {}

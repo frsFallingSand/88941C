@@ -1,1 +1,1 @@
-/home/fgsd/.vscode-oss/extensions/vexrobotics.vexcode-0.7.2025041600-universal/resources/tools/vexcom/linux-x64/vexcom --timer --progress -s 8 -w /home/fgsd/Documents/vex-vscode-projects/automation/build/automation.elf
+/home/fgsd/.vscode-oss/extensions/vexrobotics.vexcode-0.7.2025041600-universal/resources/tools/vexcom/linux-x64/vexcom --timer --progress -s 8 -w /home/fgsd/Documents/vex-vscode-projects/automation/build/automation.bin
