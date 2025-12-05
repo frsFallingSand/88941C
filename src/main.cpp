@@ -149,6 +149,8 @@ struct Mode {
 };
 
 std::vector<Mode> modes = {
+    {[] { return Controller1.ButtonUp.pressing(); }, Rdebug,
+     "DEBUG MODE-TEST ONLY!!"},
     {[] { return Controller1.ButtonL1.pressing(); }, R4l, "4 Left"},
     {[] { return Controller1.ButtonL2.pressing(); }, R7l, "7 Left"},
     {[] { return Controller1.ButtonR1.pressing(); }, R4r, "4 Right"},
@@ -187,65 +189,89 @@ void batteryCheck() {
     Brain.Screen.setCursor(3, 1);
     Brain.Screen.print(Brain.Battery.temperature());
 
+    Controller1.Screen.clearScreen();
+    Controller1.Screen.setCursor(1, 1);
+    Controller1.Screen.print(Brain.Battery.capacity());
+    Controller1.Screen.setCursor(2, 1);
+    Controller1.Screen.print(Brain.Battery.voltage());
+    Controller1.Screen.setCursor(3, 1);
+    Controller1.Screen.print(Brain.Battery.temperature());
+
     wait(3000, msec);
 }
 
 // X all
 // 4 9 7
 // l skill low r skill high
-// 边写边改的逻辑 变量命名有点屎
-void selector() {
-    int t = 3000;
-    bool state = 0;
-    int index = -1;
-    int old = -1;
-    int start = 0;
+void selector(bool debug) {
+    int t = 3000;        // time to trigger 长按大于此时间出发
+    bool state = 0;      // button state 0没按1按了
+    int pressI = -1;     // pressed index 按下的按钮对应的下标
+    int prevI = -1;      // previous(current) index 上一次对应的下标
+    int triggerTime = 0; // button trigger time 读Brain的timer来看按钮按了多久
 
-    Brain.Screen.clearScreen();
-    Brain.Screen.setPenColor(blue);
-    Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("L/R button for L/R Placement");
-    Brain.Screen.setCursor(2, 1);
-    Brain.Screen.print("1->4 2->7 L/R->9");
-    Brain.Screen.setCursor(3, 1);
-    Brain.Screen.print("Down->AWP");
-    Brain.Screen.setCursor(4, 1);
-    Brain.Screen.print("B/X->low/high skill");
-    // while (counter <= n) {
+    Controller1.Screen.clearScreen();
+    Controller1.Screen.setCursor(1, 1);
+    Controller1.Screen.print("L/R for L/R Placement");
+    Controller1.Screen.setCursor(2, 1);
+    Controller1.Screen.print("1->4 2->7 LR->9 D->AWP");
+    Controller1.Screen.setCursor(3, 1);
+    Controller1.Screen.print("B/X->low/high skill");
+
+    wait(1000, msec);
+    Controller1.Screen.clearScreen();
+
     while (1) {
-        index = -1;
+        Controller1.Screen.setCursor(2, 1);
+        Controller1.Screen.print("Selecting...");
 
+        pressI = -1;
+
+        // 遍历调用所有检测按钮的函数看有没有按
         for (int i = 0; i < modes.size(); i++) {
             if (modes[i].isPressed()) {
-                index = i;
+                pressI = i;
                 break;
             }
         }
 
-        if (index != -1) {
-            if (!state || old != index) {
+        // 如果按了
+        if (pressI != -1) {
+            // 处理松开重按 或是 换按键
+            if (!state || prevI != pressI) {
                 state = true;
-                old = index;
-                start = Brain.Timer.time();
+                prevI = pressI;
+                triggerTime = Brain.Timer.time();
             } else {
-                if (Brain.Timer.time() - start >= t) {
+                // 计时器看按了多久
+                if (Brain.Timer.time() - triggerTime >= t) {
                     Brain.Screen.clearScreen();
-                    Brain.Screen.print("Running: %s", modes[old].name);
+                    Brain.Screen.print("Running: %s", modes[prevI].name);
                     wait(1000, msec);
 
-                    Competition.autonomous(modes[old].actions);
-                    break;
+                    if (!debug) {
+                        Competition.autonomous(modes[prevI].actions);
+                        Competition.drivercontrol(modes[prevI].user);
+                    } else {
+                        modes[prevI].actions();
+                    }
+                    thread Inertialinit(init);
+                    pre_auton();
+                    while (true) {
+                        wait(100, msec);
+                    }
                 }
             }
         } else {
             state = 0;
-            old = -1;
+            prevI = -1;
         }
 
-        Brain.Screen.clearLine(5);
-        if (old != -1) {
-            Brain.Screen.setCursor(5, 1);
-            Brain.Screen.print("Selected: %s", modes[old].name);
+        // 显示当前按的
+        Brain.Screen.clearLine(1);
+        if (prevI != -1) {
+            Brain.Screen.setCursor(1, 1);
+            Brain.Screen.print("Selected: %s", modes[prevI].name);
         }
 
         wait(50, msec);
@@ -253,13 +279,15 @@ void selector() {
 }
 
 int main() {
+    bool debug = 1;
     // 角度初始化
     batteryCheck();
     initImu();
-    selector();
+    selector(debug);
+
+    // stopped from here
+
     thread Inertialinit(init);
-    // Competition.autonomous(Skill);
-    // Competition.drivercontrol(usercontrol);
     pre_auton();
     while (true) {
         wait(100, msec);

@@ -15,7 +15,9 @@ class Curve {
         }
         return l;
     }
-
+    Point linearInterpolation(Point p1, Point p2, double k) {
+        return (1 - k) * p1 + k * p2;
+    }
     std::vector<Point> resample(const std::vector<Point> &curve, double spL) {
         std::vector<Point> sp;
         double l = length(curve);
@@ -25,7 +27,25 @@ class Curve {
         sp.push_back(curve[0]);
         double sumL = 0;
 
-        // TODO
+        for (int i = 1; i < pNum; i++) {
+            double expL = i * spL;
+            for (int j = 1; j < curve.size(); j++) {
+                double segL = distance(curve[j - 1], curve[j]);
+                if (sumL + segL >= expL) {
+                    double k = (expL - sumL) / segL;
+                    sp.push_back(
+                        linearInterpolation(curve[j - 1], curve[j], k));
+                    sumL = expL;
+                    break;
+                }
+                sumL += segL;
+            }
+        }
+
+        if (distance(sp.back(), curve.back()) > 0.1) {
+            sp.push_back(curve.back());
+        }
+
         return sp;
     }
 };

@@ -74,3 +74,4 @@ extern void R9r();
 extern void Rawp();
 extern void Rsl();
 extern void Rsh();
+extern void Rdebug();
