@@ -138,8 +138,14 @@ competition Competition;
 
 struct Mode {
     std::function<bool()> isPressed;
-    std::function<void()> actions;
+    void (*actions)();
     const char *name;
+    void (*user)();
+
+    // The shit from old cpp
+    Mode(std::function<bool()> ip, void (*act)(), const char *n,
+         void (*u)() = usercontrol)
+        : isPressed(ip), actions(act), name(n), user(u) {}
 };
 
 std::vector<Mode> modes = {
@@ -171,31 +177,75 @@ void initImu() {
     }
 }
 
+void batteryCheck() {
+    Brain.Screen.clearScreen();
+    Brain.Screen.setPenColor(blue);
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print(Brain.Battery.capacity());
+    Brain.Screen.setCursor(2, 1);
+    Brain.Screen.print(Brain.Battery.voltage());
+    Brain.Screen.setCursor(3, 1);
+    Brain.Screen.print(Brain.Battery.temperature());
+
+    wait(3000, msec);
+}
+
 // X all
 // 4 9 7
 // l skill low r skill high
-// 注意！！ 程序没有对于多按键的特判
+// 边写边改的逻辑 变量命名有点屎
 void selector() {
-    int n = 100;
-    int counter = 0;
+    int t = 3000;
     bool state = 0;
     int index = -1;
+    int old = -1;
+    int start = 0;
 
     Brain.Screen.clearScreen();
     Brain.Screen.setPenColor(blue);
     Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("L/R Rod for L/R Placement");
+    Brain.Screen.print("L/R button for L/R Placement");
     Brain.Screen.setCursor(2, 1);
-    Brain.Screen.print("Up4 Left7 Right9");
+    Brain.Screen.print("1->4 2->7 L/R->9");
     Brain.Screen.setCursor(3, 1);
-    Brain.Screen.print("L1/R1 for high/low skill");
+    Brain.Screen.print("Down->AWP");
+    Brain.Screen.setCursor(4, 1);
+    Brain.Screen.print("B/X->low/high skill");
     // while (counter <= n) {
     while (1) {
+        index = -1;
+
         for (int i = 0; i < modes.size(); i++) {
             if (modes[i].isPressed()) {
                 index = i;
                 break;
             }
+        }
+
+        if (index != -1) {
+            if (!state || old != index) {
+                state = true;
+                old = index;
+                start = Brain.Timer.time();
+            } else {
+                if (Brain.Timer.time() - start >= t) {
+                    Brain.Screen.clearScreen();
+                    Brain.Screen.print("Running: %s", modes[old].name);
+                    wait(1000, msec);
+
+                    Competition.autonomous(modes[old].actions);
+                    break;
+                }
+            }
+        } else {
+            state = 0;
+            old = -1;
+        }
+
+        Brain.Screen.clearLine(5);
+        if (old != -1) {
+            Brain.Screen.setCursor(5, 1);
+            Brain.Screen.print("Selected: %s", modes[old].name);
         }
 
         wait(50, msec);
@@ -204,6 +254,7 @@ void selector() {
 
 int main() {
     // 角度初始化
+    batteryCheck();
     initImu();
     selector();
     thread Inertialinit(init);

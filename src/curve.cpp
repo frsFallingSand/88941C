@@ -24,5 +24,8 @@ class Curve {
             return curve;
         sp.push_back(curve[0]);
         double sumL = 0;
+
+        // TODO
+        return sp;
     }
 };

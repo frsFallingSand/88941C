@@ -1,0 +1,9 @@
+void R4l();
+void R4r();
+void R7l();
+void R7r();
+void R9l();
+void R9r();
+void Rawp();
+void Rsl();
+void Rsh();
