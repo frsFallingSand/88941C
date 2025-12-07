@@ -32,6 +32,7 @@ struct Point {
     Point(double x = 0, double y = 0) : x(x), y(y) {}
     Point operator+(const Point &p) const { return Point(x + p.x, y + p.y); }
     Point operator-(const Point &p) const { return Point(x - p.x, y - p.x); }
+    double cot() const { return atan2(y, x); }
 };
 
 inline Point operator*(double k, const Point &p) {

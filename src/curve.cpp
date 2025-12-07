@@ -48,4 +48,16 @@ class Curve {
 
         return sp;
     }
+
+    double tangent(const std::vector<Point> &curve, int i) {
+        if (curve.size() < 2)
+            return 0;
+        if (i == 0) {
+            return (curve[1] - curve[0]).cot();
+        } else if (i == curve.size() - 1) {
+            return (curve.back() - curve[curve.size() - 2]).cot();
+        } else {
+            return (curve[i + 1] - curve[i - 1]).cot();
+        }
+    }
 };

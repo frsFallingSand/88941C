@@ -75,3 +75,7 @@ extern void Rawp();
 extern void Rsl();
 extern void Rsh();
 extern void Rdebug();
+
+extern class Bezier;
+extern class ppc;
+extern class Curve;
