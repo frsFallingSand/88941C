@@ -1,3 +1,15 @@
-#include <vex.h>
+#include "bezier.cpp"
+#include "ppcontrol.cpp"
 
-void Rdebug() {}
+void Rdebug() {
+    auto p0 = Point(0, 0);
+    auto p1 = Point(34, 43);
+    auto p2 = Point(40, -21);
+    auto p3 = Point(42, 29);
+
+    auto path1 = Bezier();
+    path1.generate(p0, p1, p2, 100);
+
+    auto route1 = ppc::Builder{}.path(path1).build();
+    route1.setup();
+}
