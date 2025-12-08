@@ -42,6 +42,7 @@ inline Point operator*(double k, const Point &p) {
 // 位姿结构体
 struct Pose {
     double x, y, theta;
+    Point point() const { return Point(x, y); }
     Pose(double x = 0, double y = 0, double theta = 0)
         : x(x), y(y), theta(theta) {}
 };

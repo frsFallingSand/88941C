@@ -1,6 +1,11 @@
+#include "curve.cpp" // WARNING: Not the recommended solution
+#include "vex_global.h"
+#include <cmath>
 #include <limits>
 #include <vector>
-#include <vex.h>
+// #include <vex.h>
+
+Curve c = Curve();
 
 class ppc {
   private:
@@ -113,11 +118,60 @@ class ppc {
     }
 
     int lookahead(const std::vector<Point> &path, int startI) {
-        Curve c();
         int closestI = startI;
         double minD = std::numeric_limits<double>::max();
         for (int i = startI; i < path.size(); i++) {
-            double d = c.distance();
+            double d = c.distance(p.point(), path[i]);
+            if (d < minD) {
+                minD = d;
+                closestI = i;
+            }
         }
+
+        for (int i = closestI; i < path.size(); i++) {
+            double d = c.distance(p.point(), path[i]);
+            if (d >= _lookahead) {
+                return i;
+            }
+        }
+
+        return path.size() - 1;
+    }
+
+    void pp(const std::vector<Point> &path, int i) {
+        if (path.empty())
+            return;
+
+        i = lookahead(path, i);
+
+        Point t = path[i];
+        double tH = c.tangent(path, i);
+
+        Point d = t - p.point();
+        double dx = d.x;
+        double dy = d.y;
+
+        Point dr = Point(dx * cos(-p.theta) - dy * sin(-p.theta),
+                         dx * sin(-p.theta) + dy * cos(-p.theta));
+
+        double ddis = c.distance(dr, Point(0, 0));
+
+        double k = (ddis > 0.1) ? (2 * dr.x) / (ddis * ddis) : 0; // 曲率
+
+        double He = normAngle(tH - p.theta);
+        double Hc = He * _kp;
+
+        double disT = c.distance(p.point(), t);
+        double baseV = _min + (_max - _min) * std::min(1.0, disT / 50.0);
+
+        // TODO: reverse
+        double lS = baseV * (1 + k * _width / 2) + Hc;
+        double rS = baseV * (1 - k * _width / 2) - Hc;
+
+        lS = clamp(lS, -_max, _max);
+        rS = clamp(rS, -_max, _max);
+
+        L.spin(forward, lS, rpm);
+        R.spin(forward, rS, rpm);
     }
 };

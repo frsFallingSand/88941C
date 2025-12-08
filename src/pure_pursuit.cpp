@@ -238,14 +238,14 @@ int findLookaheadPoint(const std::vector<Point> &path, int startIndex) {
 }
 
 // 限制值在 [min, max] 范围内（C++17 之前没有 std::clamp）
-double clamp(double temp, double min, double max) {
+/* double clamp(double temp, double min, double max) {
     if (temp > max)
         temp = max;
     if (temp < min)
         temp = min;
     return temp;
 }
-
+ */
 // ========================
 // Pure Pursuit 控制主函数（结合贝塞尔路径）
 // ========================
