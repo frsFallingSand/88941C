@@ -1,13 +1,11 @@
 #pragma once
 #include "bezier.cpp"
-#include "curve.cpp" // WARNING: Not the recommended solution
+#include "curve.cpp"
 #include "vex_global.h"
 #include <cmath>
 #include <limits>
 #include <vector>
 // #include <vex.h>
-
-Curve c = Curve();
 
 class ppc {
   private:
@@ -118,17 +116,20 @@ class ppc {
 
         p.x += gdX;
         p.y += gdY;
-        p.theta += curT;
+        p.theta = curT;
 
         lastX = curX;
         lastY = curY;
     }
 
     int lookahead(const std::vector<Point> &path, int startI) {
+        if (path.empty() || startI >= path.size())
+            return -1;
+
         int closestI = startI;
         double minD = std::numeric_limits<double>::max();
         for (int i = startI; i < path.size(); i++) {
-            double d = c.distance(p.point(), path[i]);
+            double d = Curve::distance(p.point(), path[i]);
             if (d < minD) {
                 minD = d;
                 closestI = i;
@@ -136,7 +137,7 @@ class ppc {
         }
 
         for (int i = closestI; i < path.size(); i++) {
-            double d = c.distance(p.point(), path[i]);
+            double d = Curve::distance(p.point(), path[i]);
             if (d >= _lookahead) {
                 return i;
             }
@@ -150,9 +151,13 @@ class ppc {
             return;
 
         i = lookahead(path, i);
+        if (i == -1)
+            return;
 
         Point t = path[i];
-        double tH = c.tangent(path, i);
+        double tH = Curve::tangent(path, i);
+        if (_backward)
+            tH = normAngle(tH + M_PI);
 
         Point d = t - p.point();
         double dx = d.x;
@@ -161,15 +166,17 @@ class ppc {
         Point dr = Point(dx * cos(-p.theta) - dy * sin(-p.theta),
                          dx * sin(-p.theta) + dy * cos(-p.theta));
 
-        double ddis = c.distance(dr, Point(0, 0));
+        double ddis = Curve::distance(dr, Point(0, 0));
 
         double k = (ddis > 0.1) ? (2 * dr.x) / (ddis * ddis) : 0; // 曲率
 
         double He = normAngle(tH - p.theta);
         double Hc = He * _kp;
 
-        double disT = c.distance(p.point(), t);
+        double disT = Curve::distance(p.point(), t);
         double baseV = _min + (_max - _min) * std::min(1.0, disT / 50.0);
+        if (_backward)
+            baseV = -baseV;
 
         // TODO: reverse
         double lS = baseV * (1 + k * _width / 2) + Hc;
@@ -178,13 +185,8 @@ class ppc {
         lS = clamp(lS, -_max, _max);
         rS = clamp(rS, -_max, _max);
 
-        if (!_backward) {
-            L.spin(forward, lS, rpm);
-            R.spin(forward, rS, rpm);
-        } else {
-            L.spin(reverse, rS, rpm);
-            R.spin(reverse, lS, rpm);
-        }
+        L.spin(forward, lS, rpm);
+        R.spin(forward, rS, rpm);
     }
 
     // WARNING: Delete in release

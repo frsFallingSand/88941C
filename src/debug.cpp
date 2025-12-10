@@ -8,7 +8,7 @@ void Rdebug() {
     auto p3 = Point(42, 29);
 
     auto path1 = Bezier();
-    path1.generate(p0, p1, p2, 100);
+    path1.generate(p0, p1, p2, p3, 100);
 
     auto route1 = ppc::Builder{}.path(path1).build();
     route1.setup();

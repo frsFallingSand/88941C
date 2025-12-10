@@ -1,63 +1,63 @@
+#pragma once
 #include <vector>
 #include <vex.h>
 
-class Curve {
-  public:
-    double distance(Point p1, Point p2) {
-        Point p = p1 - p2;
-        return sqrt(pow(p.x, 2) + pow(p.y, 2));
-    }
+namespace Curve {
+inline double distance(Point p1, Point p2) {
+    Point p = p1 - p2;
+    return sqrt(pow(p.x, 2) + pow(p.y, 2));
+}
 
-    double length(const std::vector<Point> &curve) {
-        double l = 0;
-        for (size_t i = 1; i < curve.size(); i++) {
-            l += distance(curve[i - 1], curve[i]);
-        }
-        return l;
+inline double length(const std::vector<Point> &curve) {
+    double l = 0;
+    for (size_t i = 1; i < curve.size(); i++) {
+        l += distance(curve[i - 1], curve[i]);
     }
-    Point linearInterpolation(Point p1, Point p2, double k) {
-        return (1 - k) * p1 + k * p2;
-    }
-    std::vector<Point> resample(const std::vector<Point> &curve, double spL) {
-        std::vector<Point> sp;
-        double l = length(curve);
-        int pNum = static_cast<int>(l / spL) + 1;
-        if (pNum <= 1)
-            return curve;
-        sp.push_back(curve[0]);
-        double sumL = 0;
+    return l;
+}
+inline Point linearInterpolation(Point p1, Point p2, double k) {
+    return (1 - k) * p1 + k * p2;
+}
+inline std::vector<Point> resample(const std::vector<Point> &curve,
+                                   double spL) {
+    std::vector<Point> sp;
+    double l = length(curve);
+    int pNum = static_cast<int>(l / spL) + 1;
+    if (pNum <= 1)
+        return curve;
+    sp.push_back(curve[0]);
+    double sumL = 0;
 
-        for (int i = 1; i < pNum; i++) {
-            double expL = i * spL;
-            for (int j = 1; j < curve.size(); j++) {
-                double segL = distance(curve[j - 1], curve[j]);
-                if (sumL + segL >= expL) {
-                    double k = (expL - sumL) / segL;
-                    sp.push_back(
-                        linearInterpolation(curve[j - 1], curve[j], k));
-                    sumL = expL;
-                    break;
-                }
-                sumL += segL;
+    for (int i = 1; i < pNum; i++) {
+        double expL = i * spL;
+        for (int j = 1; j < curve.size(); j++) {
+            double segL = distance(curve[j - 1], curve[j]);
+            if (sumL + segL >= expL) {
+                double k = (expL - sumL) / segL;
+                sp.push_back(linearInterpolation(curve[j - 1], curve[j], k));
+                sumL = expL;
+                break;
             }
-        }
-
-        if (distance(sp.back(), curve.back()) > 0.1) {
-            sp.push_back(curve.back());
-        }
-
-        return sp;
-    }
-
-    double tangent(const std::vector<Point> &curve, int i) {
-        if (curve.size() < 2)
-            return 0;
-        if (i == 0) {
-            return (curve[1] - curve[0]).cot();
-        } else if (i == curve.size() - 1) {
-            return (curve.back() - curve[curve.size() - 2]).cot();
-        } else {
-            return (curve[i + 1] - curve[i - 1]).cot();
+            sumL += segL;
         }
     }
-};
+
+    if (distance(sp.back(), curve.back()) > 0.1) {
+        sp.push_back(curve.back());
+    }
+
+    return sp;
+}
+
+inline double tangent(const std::vector<Point> &curve, int i) {
+    if (curve.size() < 2)
+        return 0;
+    if (i == 0) {
+        return (curve[1] - curve[0]).cot();
+    } else if (i == curve.size() - 1) {
+        return (curve.back() - curve[curve.size() - 2]).cot();
+    } else {
+        return (curve[i + 1] - curve[i - 1]).cot();
+    }
+}
+}; // namespace Curve

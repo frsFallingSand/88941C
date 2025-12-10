@@ -1,6 +1,6 @@
-#include "vector"
 #pragma once
-extern double clamp(double temp, double min, double max) {
+#include "vector"
+inline extern double clamp(double temp, double min, double max) {
     if (temp > max)
         temp = max;
     if (temp < min)

@@ -1,3 +1,4 @@
+#pragma once
 #include <vex.h>
 
 class Bezier {
@@ -34,5 +35,14 @@ class Bezier {
             double t = (double)i / num - 1;
             _path.push_back(calcSingle(p0, p1, p2, t));
         }
+    }
+    void generate(double p0x, double p0y, double p1x, double p1y, double p2x,
+                  double p2y, double p3x, double p3y, int num) {
+        generate(Point(p0x, p0y), Point(p1x, p1y), Point(p2x, p2y),
+                 Point(p3x, p3y), num);
+    }
+    void generate(double p0x, double p0y, double p1x, double p1y, double p2x,
+                  double p2y, int num) {
+        generate(Point(p0x, p0y), Point(p1x, p1y), Point(p2x, p2y), num);
     }
 };
