@@ -122,40 +122,40 @@ class ppc {
         lastY = curY;
     }
 
-    int lookahead(const std::vector<Point> &path, int startI) {
-        if (path.empty() || startI >= path.size())
+    int lookahead(int startI) {
+        if (_path.empty() || startI >= _path.size())
             return -1;
 
         int closestI = startI;
         double minD = std::numeric_limits<double>::max();
-        for (int i = startI; i < path.size(); i++) {
-            double d = Curve::distance(p.point(), path[i]);
+        for (int i = startI; i < _path.size(); i++) {
+            double d = Curve::distance(p.point(), _path[i]);
             if (d < minD) {
                 minD = d;
                 closestI = i;
             }
         }
 
-        for (int i = closestI; i < path.size(); i++) {
-            double d = Curve::distance(p.point(), path[i]);
+        for (int i = closestI; i < _path.size(); i++) {
+            double d = Curve::distance(p.point(), _path[i]);
             if (d >= _lookahead) {
                 return i;
             }
         }
 
-        return path.size() - 1;
+        return _path.size() - 1;
     }
 
-    void control(const std::vector<Point> &path, int i) {
-        if (path.empty())
+    void control(int i) {
+        if (_path.empty())
             return;
 
-        i = lookahead(path, i);
+        i = lookahead(i);
         if (i == -1)
             return;
 
-        Point t = path[i];
-        double tH = Curve::tangent(path, i);
+        Point t = _path[i];
+        double tH = Curve::tangent(_path, i);
         if (_backward)
             tH = normAngle(tH + M_PI);
 
@@ -178,7 +178,7 @@ class ppc {
         if (_backward)
             baseV = -baseV;
 
-        // TODO: reverse
+        // TODO: reverse check
         double lS = baseV * (1 + k * _width / 2) + Hc;
         double rS = baseV * (1 - k * _width / 2) - Hc;
 
@@ -190,7 +190,7 @@ class ppc {
     }
 
     // WARNING: Delete in release
-    void visualizePath(const std::vector<Point> &path) {
+    void visualizePath() {
         Brain.Screen.clearScreen();
 
         // 绘制网格（辅助坐标系）
@@ -213,11 +213,11 @@ class ppc {
         // 绘制贝塞尔路径（绿色）
         Brain.Screen.setPenColor(green);
         double scaling_factor = 0.5; // 缩放比例（将厘米转为屏幕像素）
-        for (size_t i = 1; i < path.size(); i++) {
-            int x1 = xx - static_cast<int>(path[i - 1].x * scaling_factor);
-            int y1 = yy - static_cast<int>(path[i - 1].y * scaling_factor);
-            int x2 = xx - static_cast<int>(path[i].x * scaling_factor);
-            int y2 = yy - static_cast<int>(path[i].y * scaling_factor);
+        for (size_t i = 1; i < _path.size(); i++) {
+            int x1 = xx - static_cast<int>(_path[i - 1].x * scaling_factor);
+            int y1 = yy - static_cast<int>(_path[i - 1].y * scaling_factor);
+            int x2 = xx - static_cast<int>(_path[i].x * scaling_factor);
+            int y2 = yy - static_cast<int>(_path[i].y * scaling_factor);
             Brain.Screen.drawLine(x1, y1, x2, y2);
             wait(50, msec); // 慢速绘制便于观察
         }

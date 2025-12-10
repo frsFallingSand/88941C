@@ -283,7 +283,9 @@ int main() {
     // 角度初始化
     batteryCheck();
     initImu();
-    selector(debug);
+    Competition.autonomous(Rdebug);
+    Competition.drivercontrol(Rdebug);
+    // selector(debug);
 
     // stopped from here
 

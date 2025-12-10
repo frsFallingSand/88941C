@@ -45,4 +45,6 @@ class Bezier {
                   double p2y, int num) {
         generate(Point(p0x, p0y), Point(p1x, p1y), Point(p2x, p2y), num);
     }
+
+    size_t size() { return _path.size(); }
 };
