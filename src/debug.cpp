@@ -8,16 +8,22 @@ void Rdebug() {
     auto p3 = Point(42, 29);
 
     auto path1 = Bezier();
-    path1.generate(p0, p1, p2, p3, 100);
+    path1.generate(p0, p1, p2, p3, 20);
 
-    auto route1 = ppc::Builder{}.path(path1).build();
-    route1.setup();
+    auto path2 = Bezier();
+    path2.generate(0, 0, 0, 40, 35, 70, 75, 80, 20);
+
+    auto path3 = Bezier();
+    path3.generate(0, 0, 10, 10, 15, 20, 20);
+
+    auto route = ppc::Builder{}.path(path3).build();
+    route.setup();
 
     int i = 0;
     while (i < path1.size() - 1) {
-        route1.update();
-        route1.control(i);
-        route1.visualizePath();
+        route.update();
+        route.control(i);
+        route.visualizePath();
         i++;
         wait(20, msec);
     }

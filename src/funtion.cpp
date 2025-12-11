@@ -178,18 +178,18 @@ void init() {
     // while(IMU.isCalibrating())） 此处可能是为了等待用户手动触发校准？
     while (!IMU.isCalibrating()) {
         Controller1.Screen.clearScreen();
-        Brain.Screen.clearScreen();
+        // Brain.Screen.clearScreen();
 
         Brain.Screen.setCursor(5, 22);
         Controller1.Screen.setCursor(2, 11);
         Controller1.Screen.print(IMU.heading(degrees)); // 控制器屏幕显示
-        Brain.Screen.print(IMU.heading(degrees));       // 主脑屏幕显示
+        // Brain.Screen.print(IMU.heading(degrees));       // 主脑屏幕显示
 
-        // 调试提示：显示左右边界角度（338° 和 22°，可能对应场地特定方向）
-        Brain.Screen.setCursor(5, 11);
-        Brain.Screen.print("Left:338-%f", IMU.heading(degrees));
-        Brain.Screen.setCursor(8, 11);
-        Brain.Screen.print("Right:22-%f", IMU.heading(degrees));
+        // // 调试提示：显示左右边界角度（338° 和 22°，可能对应场地特定方向）
+        // Brain.Screen.setCursor(5, 11);
+        // Brain.Screen.print("Left:338-%f", IMU.heading(degrees));
+        // Brain.Screen.setCursor(8, 11);
+        // Brain.Screen.print("Right:22-%f", IMU.heading(degrees));
 
         wait(50, msec);
     }

@@ -56,9 +56,22 @@ class ppc {
             _kp = k;
             return *this;
         }
+        Builder &x(double x) {
+            lastX = x;
+            return *this;
+        }
+        Builder &y(double y) {
+            lastY = y;
+            return *this;
+        }
+        Builder &xy(Point a) {
+            lastX = a.x;
+            lastY = a.y;
+            return *this;
+        }
         ppc build() const {
             return ppc(_max, _min, _path, _backward, _lookahead, _kp, _r, _tpr,
-                       _width);
+                       _width, lastX, lastY);
         }
 
       private:
@@ -70,14 +83,16 @@ class ppc {
         double _min = 25.0;
         double _kp = 3.0; // use for heading correct
         bool _backward = 0;
+        double lastX = 0;
+        double lastY = 0;
 
         std::vector<Point> _path;
     };
 
     ppc(double max, double min, std::vector<Point> p, bool bw, double l,
-        double kp, double r, double tpr, double width)
+        double kp, double r, double tpr, double width, double x, double y)
         : _max(max), _min(min), _path(p), _backward(bw), _lookahead(l), _kp(kp),
-          _r(r), _tpr(tpr), _width(width) {}
+          _r(r), _tpr(tpr), _width(width), lastX(x), lastY(y) {}
 
     // ↑ MANUL BUILDER
 
@@ -92,14 +107,15 @@ class ppc {
     void setup() {
         // WARNING: Ensure you have init IMU
 
+        p.x = lastX;
+        p.y = lastY;
+
         x.resetPosition();
         y.resetPosition();
         lastX = x.position(degrees);
         lastY = y.position(degrees);
 
         p.theta = IMU.rotation(degrees) * M_PI / 180.0;
-        p.x = 0;
-        p.y = 0;
     }
 
     void update() {
