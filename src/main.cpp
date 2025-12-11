@@ -281,15 +281,17 @@ void selector(bool debug) {
 int main() {
     bool debug = 1;
     // 角度初始化
-    batteryCheck();
+    // batteryCheck();
     initImu();
+    thread Inertialinit(init);
+    // Rdebug();
     Competition.autonomous(Rdebug);
     Competition.drivercontrol(Rdebug);
+
     // selector(debug);
 
     // stopped from here
 
-    thread Inertialinit(init);
     pre_auton();
     while (true) {
         wait(100, msec);
