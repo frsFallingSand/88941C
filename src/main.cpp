@@ -286,7 +286,7 @@ int main() {
     thread Inertialinit(init);
     // Rdebug();
     Competition.autonomous(Rdebug);
-    Competition.drivercontrol(Rdebug);
+    Competition.drivercontrol(usercontrol);
 
     // selector(debug);
 

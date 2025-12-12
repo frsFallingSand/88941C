@@ -1,7 +1,6 @@
 #pragma once
 #include "bezier.cpp"
 #include "curve.cpp"
-#include "vex_global.h"
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -136,6 +135,11 @@ class ppc {
 
         lastX = curX;
         lastY = curY;
+
+        //     Brain.Screen.setCursor(1, 1);
+        //     Brain.Screen.print(p.x);
+        //     Brain.Screen.setCursor(2, 1);
+        //     Brain.Screen.print(p.y);
     }
 
     int lookahead(int startI) {
@@ -201,8 +205,30 @@ class ppc {
         lS = clamp(lS, -_max, _max);
         rS = clamp(rS, -_max, _max);
 
+        // Brain.Screen.setCursor(1, 1);
+        // Brain.Screen.print(lS);
+        // Brain.Screen.setCursor(2, 1);
+        // Brain.Screen.print(rS);
+        // pos lv rv curT
+        Brain.Screen.setCursor(1, 1);
+        Brain.Screen.print(p.x);
+        Brain.Screen.setCursor(1, 10);
+        Brain.Screen.print(p.y);
+        Brain.Screen.setCursor(2, 1);
+        Brain.Screen.print(lS);
+        Brain.Screen.setCursor(2, 10);
+        Brain.Screen.print(rS);
+        Brain.Screen.setCursor(3, 1);
+        Brain.Screen.print(normAngle(IMU.heading()));
+        Brain.Screen.setCursor(4, 1);
+        Brain.Screen.print(i);
+
         L.spin(forward, lS, rpm);
         R.spin(forward, rS, rpm);
+    }
+
+    bool isNear(int i, double dist = 0.5) {
+        return Curve::distance(p.point(), _path[i]) < dist ? true : false;
     }
 
     // WARNING: Delete in release
