@@ -242,6 +242,7 @@ class ppc {
                 break;
             }
             control(tI);
+            i = tI;
             wait(20, msec);
         }
 
