@@ -234,16 +234,24 @@ class ppc {
     }
 
     void run() {
-        for (int i = 0; i < _path.size() - 1; i++) {
+        int i = 0;
+        while (i < static_cast<int>(_path.size()) - 1) {
             update();
-            i = lookahead(i);
-            control(i);
+            int tI = lookahead(i);
+            if (tI == -1) {
+                break;
+            }
+            control(tI);
             wait(20, msec);
         }
+
         while (!isNear(_path.size() - 1)) {
             control(_path.size() - 1);
             wait(20, msec);
         }
+
+        L.stop();
+        R.stop();
     }
 
     // WARNING: Delete in release
