@@ -1,6 +1,7 @@
 #pragma once
 #include "bezier.cpp"
 #include "curve.cpp"
+#include "vex_global.h"
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -229,6 +230,19 @@ class ppc {
 
     bool isNear(int i, double dist = 0.5) {
         return Curve::distance(p.point(), _path[i]) < dist ? true : false;
+    }
+
+    void run() {
+        for (int i = 0; i < _path.size() - 1; i++) {
+            update();
+            i = lookahead(i);
+            control(i);
+            wait(20, msec);
+        }
+        while (!isNear(_path.size() - 1)) {
+            control(_path.size() - 1);
+            wait(20, msec);
+        }
     }
 
     // WARNING: Delete in release

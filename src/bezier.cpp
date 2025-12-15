@@ -1,4 +1,5 @@
 #pragma once
+#include "curve.cpp"
 #include <vex.h>
 
 class Bezier {
@@ -15,6 +16,7 @@ class Bezier {
         double mt3 = mt2 * mt;
         return mt3 * p0 + 3 * mt2 * t * p1 + 3 * mt * t2 * p2 + t3 * p3;
     }
+    void resample(double spL) { _path = Curve::resample(_path, spL); }
     void generate(Point p0, Point p1, Point p2, Point p3, int num) {
         _path.clear();
         for (int i = 0; i < num; i++) {
