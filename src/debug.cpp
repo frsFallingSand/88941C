@@ -1,5 +1,34 @@
 #include "bezier.cpp"
 #include "ppcontrol.cpp"
+#include <vector>
+
+// FUTURE COMMIT: debug module + Debug mode
+
+void lrsc() {
+    L.setStopping(coast);
+    R.setStopping(coast);
+}
+void lrs() {
+    L.stop();
+    R.stop();
+}
+
+void pr(Bezier p) {
+    for (int i = 0; i < p.size(); i++) {
+        break;
+        Brain.Screen.setCursor(2 * i + 1, 1);
+        Brain.Screen.print(p.getPath()[i].x);
+        Brain.Screen.setCursor(2 * i + 2, 1);
+        Brain.Screen.print(p.getPath()[i].y);
+        wait(500, msec);
+    }
+}
+
+void ps(ppc r) {
+    Controller1.Screen.clearScreen();
+    Controller1.Screen.setCursor(1, 1);
+    Controller1.Screen.print(r.getPath().size());
+}
 
 void Rdebug() {
     auto p0 = Point(0, 0);
@@ -20,23 +49,10 @@ void Rdebug() {
     auto path4 = Bezier();
     path4.generate(0, 0, 0, 10, 0, 20, 0, 30, 50);
 
-    auto route = ppc::Builder{}.path(path4).build();
+    auto route = ppc::Builder{}.path(path1).build();
+
     route.setup();
-
-    for (int i = 0; i < path1.size(); i++) {
-        break;
-        Brain.Screen.setCursor(2 * i + 1, 1);
-        Brain.Screen.print(path1.getPath()[i].x);
-        Brain.Screen.setCursor(2 * i + 2, 1);
-        Brain.Screen.print(path1.getPath()[i].y);
-        wait(500, msec);
-    }
-
-    // L.setStopping(coast);
-    // R.setStopping(coast);
-
     route.run();
 
-    L.stop();
-    R.stop();
+    lrs();
 }

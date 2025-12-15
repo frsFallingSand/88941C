@@ -1,7 +1,6 @@
 #pragma once
 #include "bezier.cpp"
 #include "curve.cpp"
-#include "vex_global.h"
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -95,6 +94,8 @@ class ppc {
           _r(r), _tpr(tpr), _width(width), lastX(x), lastY(y) {}
 
     // ↑ MANUL BUILDER
+
+    std::vector<Point> getPath() { return _path; }
 
     double normAngle(double a) {
         while (a > M_PI)
