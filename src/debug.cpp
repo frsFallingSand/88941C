@@ -49,10 +49,11 @@ void Rdebug() {
     auto path4 = Bezier();
     path4.generate(0, 0, 0, 10, 0, 20, 0, 30, 50);
 
-    auto route =
-        ppc::Builder{}.path(path4).lookahead(1).max(50).min(20).build();
+    auto route = ppc::Builder{}.path(path4).lookahead(5).build();
 
     route.setup();
+    Brain.Screen.setCursor(10, 1);
+    Brain.Screen.print("AFTER setup()");
     route.run();
 
     lrs();

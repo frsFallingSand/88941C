@@ -172,7 +172,7 @@ class ppc {
         if (_path.empty())
             return;
 
-        i = lookahead(i);
+        // i = lookahead(i);
         if (i == -1)
             return;
 
@@ -239,19 +239,25 @@ class ppc {
     }
 
     void run() {
+        Brain.Screen.setCursor(10, 1);
+        Brain.Screen.print("START run()");
         int i = 0;
         while (i < static_cast<int>(_path.size()) - 1) {
+            Brain.Screen.setCursor(10, 1);
+            Brain.Screen.print("IN run()");
             update();
             int tI = lookahead(i);
-            if (tI == -1)
-                break;
             control(tI);
             if (tI > i)
                 i = tI;
+            Brain.Screen.setCursor(8, 1);
+            Brain.Screen.print(i);
             wait(20, msec);
         }
 
         while (!isNear(_path.size() - 1)) {
+            Brain.Screen.setCursor(8, 1);
+            Brain.Screen.print(i);
             control(_path.size() - 1);
             wait(20, msec);
         }
