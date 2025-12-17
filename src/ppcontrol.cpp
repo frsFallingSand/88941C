@@ -43,7 +43,7 @@ class ppc {
             _path = p.getPath();
             return *this;
         }
-        Builder &backward(double a) {
+        Builder &backward(bool a) {
             _backward = a;
             return *this;
         }
@@ -225,6 +225,11 @@ class ppc {
         Brain.Screen.setCursor(4, 1);
         Brain.Screen.print(i);
 
+        Brain.Screen.setCursor(5, 1);
+        Brain.Screen.print(_path[i].x);
+        Brain.Screen.setCursor(6, 1);
+        Brain.Screen.print(_path[i].y);
+
         L.spin(forward, lS, rpm);
         R.spin(forward, rS, rpm);
     }
@@ -238,12 +243,11 @@ class ppc {
         while (i < static_cast<int>(_path.size()) - 1) {
             update();
             int tI = lookahead(i);
-            if (tI == -1) {
+            if (tI == -1)
                 break;
-            }
             control(tI);
             if (tI > i)
-                i = tI - 1;
+                i = tI;
             wait(20, msec);
         }
 

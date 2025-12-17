@@ -49,7 +49,8 @@ void Rdebug() {
     auto path4 = Bezier();
     path4.generate(0, 0, 0, 10, 0, 20, 0, 30, 50);
 
-    auto route = ppc::Builder{}.path(path4).lookahead(0.7).build();
+    auto route =
+        ppc::Builder{}.path(path4).lookahead(1).max(50).min(20).build();
 
     route.setup();
     route.run();
