@@ -9,19 +9,20 @@ brain Brain;
 
 // VEXcode device constructors
 controller Controller1 = controller(primary);
-motor L1 = motor(PORT12, ratio6_1, true);
-motor L2 = motor(PORT13, ratio6_1, false);
-motor L3 = motor(PORT14, ratio6_1, true);
+motor L1 = motor(PORT11, ratio6_1, true);
+motor L2 = motor(PORT12, ratio6_1, true);
+motor L3 = motor(PORT13, ratio6_1, true);
 motor R1 = motor(PORT18, ratio6_1, false);
 motor R2 = motor(PORT19, ratio6_1, false);
-motor R3 = motor(PORT20, ratio6_1, true);
-motor Intake = motor(PORT2, ratio18_1, false);
-motor Export = motor(PORT3, ratio18_1, false);
-inertial IMU = inertial(PORT10, left);
-motor Intake2 = motor(PORT1, ratio18_1, true);
-digital_out front_panel = digital_out(Brain.ThreeWirePort.A);
-digital_out Double_hook = digital_out(Brain.ThreeWirePort.B);
-digital_out Lift_it_up = digital_out(Brain.ThreeWirePort.C);
+motor R3 = motor(PORT20, ratio6_1, false);
+motor Intake = motor(PORT10, ratio6_1, true);
+motor Export = motor(PORT2, ratio18_1, false);
+motor transmit = motor(PORT1, ratio18_1, true);
+digital_out Long_bridge_baffle = digital_out(Brain.ThreeWirePort.F);
+digital_out Import_bucket_baffle = digital_out(Brain.ThreeWirePort.G);
+optical Optical = optical(PORT4);
+digital_out IntakeCylinder = digital_out(Brain.ThreeWirePort.B);
+inertial IMU = inertial(PORT5);
 rotation x = rotation(PORT7, true);
 rotation y = rotation(PORT5, true);
 
