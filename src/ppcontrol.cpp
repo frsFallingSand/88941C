@@ -16,6 +16,7 @@ class ppc {
     double _min;
     double _kp; // use for heading correct
     bool _backward;
+    int _i;
     std::vector<Point> _path;
 
     Pose p;
@@ -68,9 +69,13 @@ class ppc {
             lastY = a.y;
             return *this;
         }
+        Builder &i(int a) {
+            _i = a;
+            return *this;
+        }
         ppc build() const {
             return ppc(_max, _min, _path, _backward, _lookahead, _kp, _r, _tpr,
-                       _width, lastX, lastY);
+                       _width, lastX, lastY, _i);
         }
 
       private:
@@ -84,14 +89,16 @@ class ppc {
         bool _backward = 0;
         double lastX = 0;
         double lastY = 0;
+        int _i = 0;
 
         std::vector<Point> _path;
     };
 
     ppc(double max, double min, std::vector<Point> p, bool bw, double l,
-        double kp, double r, double tpr, double width, double x, double y)
+        double kp, double r, double tpr, double width, double x, double y,
+        int i)
         : _max(max), _min(min), _path(p), _backward(bw), _lookahead(l), _kp(kp),
-          _r(r), _tpr(tpr), _width(width), lastX(x), lastY(y) {}
+          _r(r), _tpr(tpr), _width(width), lastX(x), lastY(y), _i(i) {}
 
     // ↑ MANUL BUILDER
 
@@ -246,10 +253,12 @@ class ppc {
             Brain.Screen.setCursor(10, 1);
             Brain.Screen.print("IN run()");
             update();
-            int tI = lookahead(i);
-            control(tI);
-            if (tI > i)
-                i = tI;
+            if (isNear(i)) {
+                i++;
+                continue;
+            }
+            i = lookahead(i);
+            control(i);
             Brain.Screen.setCursor(8, 1);
             Brain.Screen.print(i);
             wait(20, msec);
