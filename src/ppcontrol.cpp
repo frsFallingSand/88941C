@@ -264,12 +264,15 @@ class ppc {
             wait(20, msec);
         }
 
+        double _mmax = _max;
+        _max *= 0.5;
         while (!isNear(_path.size() - 1)) {
             Brain.Screen.setCursor(8, 1);
             Brain.Screen.print(i);
             control(_path.size() - 1);
             wait(20, msec);
         }
+        _max = _mmax;
 
         L.stop();
         R.stop();
