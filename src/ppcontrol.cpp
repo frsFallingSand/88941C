@@ -259,6 +259,8 @@ class ppc {
             }
             i = lookahead(i);
             control(i);
+            if (isNear(i, _lookahead * 0.5))
+                i = std::min(i + 1, static_cast<int>(_path.size()) - 1);
             Brain.Screen.setCursor(8, 1);
             Brain.Screen.print(i);
             wait(20, msec);
