@@ -18,14 +18,19 @@ motor R3 = motor(PORT20, ratio6_1, false);
 motor Intake = motor(PORT10, ratio6_1, true);
 motor Export = motor(PORT2, ratio18_1, false);
 motor transmit = motor(PORT1, ratio18_1, true);
+
+// 气缸
 digital_out Long_bridge_baffle = digital_out(Brain.ThreeWirePort.F);
 digital_out Import_bucket_baffle = digital_out(Brain.ThreeWirePort.G);
-optical Optical = optical(PORT4);
 digital_out IntakeCylinder = digital_out(Brain.ThreeWirePort.B);
-inertial IMU = inertial(PORT5);
-rotation x = rotation(PORT7, true);
-rotation y = rotation(PORT5, true);
+digital_out hook = digital_out(Brain.ThreeWirePort.D);
+digital_out odometer = digital_out(Brain.ThreeWirePort.A);
 
+// 传感器
+inertial IMU = inertial(PORT8);
+optical Optical = optical(PORT4);
+rotation x = rotation(PORT7, true);
+rotation y = rotation(PORT5, false);
 // VEXcode generated functions
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;

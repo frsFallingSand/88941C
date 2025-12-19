@@ -12,19 +12,20 @@ extern motor R2;
 extern motor R3;
 extern motor Intake;
 extern motor Export;
-extern inertial IMU;
-extern motor Intake2;
-extern digital_out front_panel;
-extern digital_out Double_hook;
-extern digital_out Lift_it_up;
-extern rotation x;
-extern rotation y;
-extern optical Optical;
 extern motor transmit;
-extern digital_out IntakeCylinder;
+
+// 气缸
 extern digital_out Long_bridge_baffle;
 extern digital_out Import_bucket_baffle;
+extern digital_out IntakeCylinder;
+extern digital_out hook;
+extern digital_out odometer;
 
+// 传感器
+extern optical Optical;
+extern rotation x;
+extern rotation y;
+extern inertial IMU;
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
  *

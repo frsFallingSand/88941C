@@ -284,7 +284,7 @@ int main() {
     // batteryCheck();
     initImu();
     thread Inertialinit(init);
-    // Rdebug();
+    //  Rdebug();
     Competition.autonomous(Rdebug);
     Competition.drivercontrol(usercontrol);
 

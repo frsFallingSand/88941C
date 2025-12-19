@@ -1,5 +1,5 @@
-#include "bezier.cpp"
-#include "ppcontrol.cpp"
+#include <class/bezier.hpp>
+#include <class/ppcontrol.hpp>
 #include <vector>
 
 // FUTURE COMMIT: debug module + Debug mode
@@ -31,13 +31,15 @@ void ps(ppc r) {
 }
 
 void Rdebug() {
-    auto p0 = Point(0, 0);
-    auto p1 = Point(34, 43);
-    auto p2 = Point(40, -21);
-    auto p3 = Point(42, 29);
+    odometer.set(1);
 
-    auto path1 = Bezier();
-    path1.generate(p0, p1, p2, p3, 20);
+    // auto p0 = Point(0, 0);
+    // auto p1 = Point(34, 43);
+    // auto p2 = Point(40, -21);
+    // auto p3 = Point(42, 29);
+
+    // auto path1 = Bezier();
+    // path1.generate(p0, p1, p2, p3, 20);
     // path1.resample(1);
 
     // auto path2 = Bezier();
@@ -47,8 +49,7 @@ void Rdebug() {
     // path3.generate(0, 0, 10, 10, 15, 20, 20);
 
     auto path4 = Bezier();
-    path4.generate(0, 0, 0, 10, 0, 20, 0, 30, 50);
-
+    path4.generate(0, 0, 0, 8, 0, 16, 0, 24, 50);
     auto route = ppc::Builder{}.path(path4).lookahead(5).build();
 
     route.setup();

@@ -1,10 +1,40 @@
-#include "vex.h"
-
+#include <class/bezier.hpp>
+#include <class/ppcontrol.hpp>
+void pr1(Bezier p) {
+    for (int i = 0; i < p.size(); i++) {
+        break;
+        Brain.Screen.setCursor(2 * i + 1, 1);
+        Brain.Screen.print(p.getPath()[i].x);
+        Brain.Screen.setCursor(2 * i + 2, 1);
+        Brain.Screen.print(p.getPath()[i].y);
+        wait(500, msec);
+    }
+}
 void usercontrol() {
     L.setStopping(brake);
     R.setStopping(brake);
 
+    // L.setStopping(coast);
+    // R.setStopping(coast);
+
+    odometer.set(1);
+    wait(1000, msec);
+
+    Optical.setLightPower(10, pct);
     while (1) {
+        auto path4 = Bezier();
+        path4.generate(0, 0, 0, 8, 0, 16, 0, 24, 24);
+        auto route = ppc::Builder{}.path(path4).lookahead(2).r(1).build();
+        wait(3000, msec);
+        route.setup();
+        pr1(path4);
+        Brain.Screen.setCursor(10, 1);
+        Brain.Screen.print("AFTER setup()");
+        // while (1) {
+        //     route.update();
+        //     wait(20, msec);
+        // }
+        route.run();
         float POWER_Left = 0;
         float POWER_Right = 0;
 
