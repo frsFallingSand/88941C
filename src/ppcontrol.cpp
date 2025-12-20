@@ -162,7 +162,7 @@ void ppc::control(int i) {
     if (_backward)
         tH = normAngle(tH + M_PI);
 
-    Point d = t - p.point();
+    Point d = t - p.point(); // 场地误差
     double dx = d.x;
     double dy = d.y;
 
@@ -170,15 +170,16 @@ void ppc::control(int i) {
                      dx * sin(-p.theta) + dy * cos(-p.theta));
 
     Point dr45;
-    dr45.x = dr.x * sin(M_PI / 4) - dr.y * cos(M_PI / 4);
-    dr45.y = dr.x * cos(M_PI / 4) + dr.y * sin(M_PI / 4);
+    dr45.x = dr.x * cos(-M_PI / 4) - dr.y * sin(-M_PI / 4);
+    dr45.y = dr.x * sin(-M_PI / 4) + dr.y * cos(-M_PI / 4);
 
     double ddis = Curve::distance(dr45, Point(0, 0));
 
     double k = (ddis > 0.1) ? (2 * dr45.x) / (ddis * ddis) : 0; // 曲率
 
     double He = normAngle(tH - p.theta);
-    double Hc = He * _kp;
+    // double Hc = He * _kp;
+    double Hc = 0;
 
     double disT = Curve::distance(p.point(), t);
     double baseV = _min + (_max - _min) * std::min(1.0, disT / 50.0);
@@ -192,10 +193,10 @@ void ppc::control(int i) {
     lS = clamp(lS, -_max, _max);
     rS = clamp(rS, -_max, _max);
 
-    // Brain.Screen.setCursor(1, 1);
-    // Brain.Screen.print(lS);
-    // Brain.Screen.setCursor(2, 1);
-    // Brain.Screen.print(rS);
+    Brain.Screen.setCursor(6, 1);
+    Brain.Screen.print(lS);
+    Brain.Screen.setCursor(6, 10);
+    Brain.Screen.print(rS);
     // pos lv rv curT
     // Brain.Screen.setCursor(1, 1);
     // Brain.Screen.print("p: %d", p.x);
@@ -211,8 +212,8 @@ void ppc::control(int i) {
     Brain.Screen.print(i);
 
     Brain.Screen.setCursor(5, 1);
-    Brain.Screen.print(_path[i].x);
-    Brain.Screen.setCursor(6, 1);
+    Brain.Screen.print("path.xy %f", _path[i].x);
+    Brain.Screen.setCursor(5, 20);
     Brain.Screen.print(_path[i].y);
 
     L.spin(forward, lS, rpm);
