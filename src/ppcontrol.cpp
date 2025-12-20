@@ -170,13 +170,13 @@ void ppc::control(int i) {
     Point dr = Point(dx * cos(-p.theta) - dy * sin(-p.theta),
                      dx * sin(-p.theta) + dy * cos(-p.theta)); // 机器坐标系误差
 
-    Point dr45;
-    dr45.x = dr.x * cos(-M_PI / 4) - dr.y * sin(-M_PI / 4);
-    dr45.y = dr.x * sin(-M_PI / 4) + dr.y * cos(-M_PI / 4);
+    // Point dr45;
+    // dr45.x = dr.x * cos(-M_PI / 4) - dr.y * sin(-M_PI / 4);
+    // dr45.y = dr.x * sin(-M_PI / 4) + dr.y * cos(-M_PI / 4);
 
-    double ddis = Curve::distance(dr45, Point(0, 0));
+    double ddis = Curve::distance(dr, Point(0, 0));
 
-    double k = (ddis > 0.1) ? (2 * dr45.x) / (ddis * ddis) : 0; // 曲率
+    double k = (ddis > 0.1) ? (2 * dr.x) / (ddis * ddis) : 0; // 曲率
 
     double He = normAngle(tH - p.theta);
     // double Hc = He * _kp;
@@ -203,10 +203,10 @@ void ppc::control(int i) {
     // Brain.Screen.print("p: %d", p.x);
     // Brain.Screen.setCursor(1, 10);
     // Brain.Screen.print(p.y);
-    Brain.Screen.setCursor(2, 1);
-    Brain.Screen.print("dr45: %f", dr45.x);
-    Brain.Screen.setCursor(2, 20);
-    Brain.Screen.print(dr45.y);
+    // Brain.Screen.setCursor(2, 1);
+    // Brain.Screen.print("dr45: %f", dr45.x);
+    // Brain.Screen.setCursor(2, 20);
+    // Brain.Screen.print(dr45.y);
     Brain.Screen.setCursor(3, 1);
     Brain.Screen.print(normAngle(IMU.heading()));
     Brain.Screen.setCursor(4, 1);
