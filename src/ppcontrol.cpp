@@ -162,12 +162,13 @@ void ppc::control(int i) {
     if (_backward)
         tH = normAngle(tH + M_PI);
 
-    Point d = t - p.point(); // 场地误差
+    // t:target p:pose
+    Point d = t - p.point(); // 场地坐标系误差
     double dx = d.x;
     double dy = d.y;
 
     Point dr = Point(dx * cos(-p.theta) - dy * sin(-p.theta),
-                     dx * sin(-p.theta) + dy * cos(-p.theta));
+                     dx * sin(-p.theta) + dy * cos(-p.theta)); // 机器坐标系误差
 
     Point dr45;
     dr45.x = dr.x * cos(-M_PI / 4) - dr.y * sin(-M_PI / 4);
@@ -187,8 +188,8 @@ void ppc::control(int i) {
         baseV = -baseV;
 
     // TODO: reverse check
-    double lS = baseV * (1 + k * _width / 2) + Hc;
-    double rS = baseV * (1 - k * _width / 2) - Hc;
+    double lS = baseV * (1 - k * _width / 2) + Hc;
+    double rS = baseV * (1 + k * _width / 2) - Hc;
 
     lS = clamp(lS, -_max, _max);
     rS = clamp(rS, -_max, _max);
