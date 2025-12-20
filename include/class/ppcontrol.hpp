@@ -24,7 +24,7 @@ class ppc {
         double _r = 1.0;
         double _tpr = 360.0;
         double _width = 18.5;
-        double _lookahead = 28.5;
+        double _lookahead = 2;
         double _max = 80.0;
         double _min = 25.0;
         double _kp = 3.0;

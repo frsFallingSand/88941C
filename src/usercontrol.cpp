@@ -23,18 +23,20 @@ void usercontrol() {
     Optical.setLightPower(10, pct);
     while (1) {
         auto path4 = Bezier();
-        path4.generate(0, 0, 0, 8, 0, 16, 0, 24, 24);
-        auto route = ppc::Builder{}.path(path4).lookahead(2).r(1).build();
+        path4.generate(0, 0, 0, 8, 0, 16, 0, 48, 48);
+        auto route =
+            ppc::Builder{}.path(path4).lookahead(2).kp(0.3).r(1).build();
         wait(3000, msec);
         route.setup();
         pr1(path4);
-        Brain.Screen.setCursor(10, 1);
-        Brain.Screen.print("AFTER setup()");
+        // Brain.Screen.setCursor(10, 1);
+        // Brain.Screen.print("AFTER setup()");
         // while (1) {
         //     route.update();
         //     wait(20, msec);
         // }
         route.run();
+        return;
         float POWER_Left = 0;
         float POWER_Right = 0;
 
@@ -180,7 +182,7 @@ void usercontrol() {
                    Controller1.ButtonL2.pressing()) {
             // 按了L2，没有按L1 --->中下桥
             transmit.spin(reverse, 100, vex::velocityUnits::pct);
-            Intake.spin(reverse, 30, vex::velocityUnits::pct);
+            Intake.spin(reverse, 12, vex::velocityUnits::pct);
             Export.spin(reverse, 100, vex::velocityUnits::pct);
             IntakeCylinder.set(true);
         } else {

@@ -1,5 +1,8 @@
 #pragma once
+#include "class/d.h"
 #include "curve.cpp"
+#include "vex.h"
+#include "vex_global.h"
 #include <class/bezier.hpp>
 #include <class/ppcontrol.hpp>
 #include <cmath>
@@ -87,7 +90,7 @@ void ppc::update() {
         ((dX * sin(M_PI / 4) + dY * cos(M_PI / 4)) / _tpr) * (2 * M_PI * _r);
     // 度转弧
     double curT = IMU.rotation(degrees) * M_PI / 180.0;
-    // 转为机器坐标
+    // 转为场地坐标
     double gdX = dx45 * cos(p.theta) - dy45 * sin(p.theta);
     double gdY = dx45 * sin(p.theta) + dy45 * cos(p.theta);
 
@@ -102,24 +105,24 @@ void ppc::update() {
     Brain.Screen.print(p.x);
     Brain.Screen.setCursor(1, 10);
     Brain.Screen.print(p.y);
-    Brain.Screen.setCursor(2, 1);
-    Brain.Screen.print(p.theta);
-    Brain.Screen.setCursor(3, 1);
-    Brain.Screen.print("dX:%f", dX);
-    Brain.Screen.setCursor(3, 15);
-    Brain.Screen.print("dY:%f", dY);
-    // Brain.Screen.setCursor(6, 1);
-    // Brain.Screen.print("dx45:%f", dx45);
-    // Brain.Screen.setCursor(7, 1);
-    // Brain.Screen.print("dY45:%f", dy45);
+    // Brain.Screen.setCursor(2, 1);
+    // Brain.Screen.print(p.theta);
+    // Brain.Screen.setCursor(3, 1);
+    // Brain.Screen.print("dX:%f", dX);
+    // Brain.Screen.setCursor(3, 15);
+    // Brain.Screen.print("dY:%f", dY);
+    // // Brain.Screen.setCursor(6, 1);
+    // // Brain.Screen.print("dx45:%f", dx45);
+    // // Brain.Screen.setCursor(7, 1);
+    // // Brain.Screen.print("dY45:%f", dy45);
 
-    Brain.Screen.setCursor(4, 1);
-    Brain.Screen.print("curX:%f-lastX:%f", curX, lastX);
-    Brain.Screen.setCursor(4, 20);
-    Brain.Screen.print("curY:%f-lastY:%f", curY, lastY);
+    // Brain.Screen.setCursor(4, 1);
+    // Brain.Screen.print("curX:%f-lastX:%f", curX, lastX);
+    // Brain.Screen.setCursor(4, 20);
+    // Brain.Screen.print("curY:%f-lastY:%f", curY, lastY);
 
-    Brain.Screen.setCursor(5, 1);
-    Brain.Screen.print("curT%f", curT);
+    // Brain.Screen.setCursor(5, 1);
+    // Brain.Screen.print("curT%f", curT);
 }
 
 int ppc::lookahead(int startI) {
@@ -166,9 +169,13 @@ void ppc::control(int i) {
     Point dr = Point(dx * cos(-p.theta) - dy * sin(-p.theta),
                      dx * sin(-p.theta) + dy * cos(-p.theta));
 
-    double ddis = Curve::distance(dr, Point(0, 0));
+    Point dr45;
+    dr45.x = dr.x * sin(M_PI / 4) - dr.y * cos(M_PI / 4);
+    dr45.y = dr.x * cos(M_PI / 4) + dr.y * sin(M_PI / 4);
 
-    double k = (ddis > 0.1) ? (2 * dr.x) / (ddis * ddis) : 0; // 曲率
+    double ddis = Curve::distance(dr45, Point(0, 0));
+
+    double k = (ddis > 0.1) ? (2 * dr45.x) / (ddis * ddis) : 0; // 曲率
 
     double He = normAngle(tH - p.theta);
     double Hc = He * _kp;
@@ -191,53 +198,59 @@ void ppc::control(int i) {
     // Brain.Screen.print(rS);
     // pos lv rv curT
     // Brain.Screen.setCursor(1, 1);
-    // Brain.Screen.print(p.x);
+    // Brain.Screen.print("p: %d", p.x);
     // Brain.Screen.setCursor(1, 10);
     // Brain.Screen.print(p.y);
-    // Brain.Screen.setCursor(2, 1);
-    // Brain.Screen.print(lS);
-    // Brain.Screen.setCursor(2, 10);
-    // Brain.Screen.print(rS);
-    // Brain.Screen.setCursor(3, 1);
-    // Brain.Screen.print(normAngle(IMU.heading()));
-    // Brain.Screen.setCursor(4, 1);
-    // Brain.Screen.print(i);
+    Brain.Screen.setCursor(2, 1);
+    Brain.Screen.print("dr45: %f", dr45.x);
+    Brain.Screen.setCursor(2, 20);
+    Brain.Screen.print(dr45.y);
+    Brain.Screen.setCursor(3, 1);
+    Brain.Screen.print(normAngle(IMU.heading()));
+    Brain.Screen.setCursor(4, 1);
+    Brain.Screen.print(i);
 
-    // Brain.Screen.setCursor(5, 1);
-    // Brain.Screen.print(_path[i].x);
-    // Brain.Screen.setCursor(6, 1);
-    // Brain.Screen.print(_path[i].y);
+    Brain.Screen.setCursor(5, 1);
+    Brain.Screen.print(_path[i].x);
+    Brain.Screen.setCursor(6, 1);
+    Brain.Screen.print(_path[i].y);
 
     L.spin(forward, lS, rpm);
     R.spin(forward, rS, rpm);
 }
 
 bool ppc::isNear(int i, double dist) {
-    return Curve::distance(p.point(), _path[i]) < dist ? true : false;
+    return Curve::distance(p.point(), _path[i]) < dist;
 }
 
 void ppc::run() {
-    Brain.Screen.setCursor(6, 1);
-    Brain.Screen.print("START run()");
+    // Brain.Screen.setCursor(6, 1);
+    // Brain.Screen.print("START run()");
     int i = 0;
     while (i < static_cast<int>(_path.size()) - 1) {
-        Brain.Screen.setCursor(6, 1);
-        Brain.Screen.print("IN run()");
+        // Brain.Screen.setCursor(6, 1);
+        // Brain.Screen.print("i: %d", i);
         update();
-        Brain.Screen.setCursor(9, 1);
-        Brain.Screen.print(_path[i].x);
-        Brain.Screen.setCursor(9, 10);
-        Brain.Screen.print(_path[i].y);
+        // Brain.Screen.setCursor(9, 1);
+        // Brain.Screen.print(_path[i].x);
+        // Brain.Screen.setCursor(9, 10);
+        // Brain.Screen.print(_path[i].y);
         if (isNear(i)) {
+            // d::w([this, i]() {
+            //     Controller1.Screen.print("isNear(%d)", i);
+            //     Controller1.Screen.setCursor(2, 1);
+            //     Controller1.Screen.print("%d,%d", _path[i].x, _path[i].y);
+            // });
             i++;
-            // continue;
+            // Brain.Screen.setCursor(i, 1);
+            // Brain.Screen.print(i);
+            // wait(100, msec);
+            continue;
         }
         i = lookahead(i);
         control(i);
         // if (isNear(i, _lookahead * 0.5))
         //     i = std::min(i + 1, static_cast<int>(_path.size()) - 1);
-        Brain.Screen.setCursor(7, 1);
-        Brain.Screen.print(i);
         wait(20, msec);
     }
 

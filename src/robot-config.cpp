@@ -27,7 +27,7 @@ digital_out hook = digital_out(Brain.ThreeWirePort.D);
 digital_out odometer = digital_out(Brain.ThreeWirePort.A);
 
 // 传感器
-inertial IMU = inertial(PORT8);
+inertial IMU = inertial(PORT8, left);
 optical Optical = optical(PORT4);
 rotation x = rotation(PORT7, true);
 rotation y = rotation(PORT5, false);
