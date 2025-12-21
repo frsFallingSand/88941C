@@ -23,9 +23,17 @@ void usercontrol() {
     Optical.setLightPower(10, pct);
     while (1) {
         auto path4 = Bezier();
-        path4.generate(0, 0, 0, 16, 0, 32, 0, 48, 48);
-        auto route =
-            ppc::Builder{}.path(path4).lookahead(2).kp(0.3).r(1).build();
+        // path4.generate(0, 0, 0, 16, 0, 32, 0, 48, 48);
+        // path4.generate(0, 0, 7, 22, 14, 44, 22, 66, 48);
+        path4.generate(0, 0, 34, 43, 40, -21, 42, 29, 72);
+        auto route = ppc::Builder{}
+                         .path(path4)
+                         .lookahead(3)
+                         .kp(0.2)
+                         .r(1)
+                         .max(100)
+                         .min(10)
+                         .build();
         wait(3000, msec);
         route.setup();
         pr1(path4);

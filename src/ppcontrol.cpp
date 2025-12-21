@@ -216,7 +216,7 @@ void ppc::control(int i) {
 
     double ddis = Curve::distance(dr, Point(0, 0));
 
-    double k = (ddis > 0.5) ? -(2 * dr.x) / (ddis * ddis) : 0; // 曲率
+    double k = (ddis > 3) ? -(2 * dr.x) / (ddis * ddis) : 0; // 曲率
 
     double He = normAngle(tH - p.theta);
     double Hc = He * _kp;
@@ -280,7 +280,7 @@ void ppc::run() {
         // Brain.Screen.print(_path[i].x);
         // Brain.Screen.setCursor(9, 10);
         // Brain.Screen.print(_path[i].y);
-        if (isNear(i, 1.0)) {
+        if (isNear(i, 3.0)) {
             // d::w([this, i]() {
             //     Controller1.Screen.print("isNear(%d)", i);
             //     Controller1.Screen.setCursor(2, 1);
@@ -300,8 +300,12 @@ void ppc::run() {
     }
 
     double _mmax = _max;
-    _max *= 0.2;
+    double _mmin = _min;
+    _max *= 0.5;
+    _min *= 1.5;
     while (!isNear(_path.size() - 1)) {
+        if (isNear(_path.size() - 1, 1))
+            break;
         update();
         Brain.Screen.setCursor(7, 1);
         Brain.Screen.print(i);
@@ -309,6 +313,7 @@ void ppc::run() {
         wait(20, msec);
     }
     _max = _mmax;
+    _min = _mmin;
 
     L.stop(brake);
     R.stop(brake);
