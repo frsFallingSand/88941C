@@ -77,26 +77,53 @@ void ppc::setup() {
 }
 
 void ppc::update() {
-    // 当前X,Y
+    // // 当前X,Y
+    // double curX = x.position(degrees);
+    // double curY = y.position(degrees);
+    // // X,Y增量
+    // double dX = curX - lastX;
+    // double dY = curY - lastY;
+    // // 转换为45度方向,cos，sin传入弧度值，非角度值
+    // double dx45 =
+    //     ((dX * cos(M_PI / 4) - dY * sin(M_PI / 4)) / _tpr) * (2 * M_PI * _r);
+    // double dy45 =
+    //     ((dX * sin(M_PI / 4) + dY * cos(M_PI / 4)) / _tpr) * (2 * M_PI * _r);
+    // // 度转弧
+    // double curT = IMU.rotation(degrees) * M_PI / 180.0;
+    // // 转为场地坐标
+    // double gdX = dx45 * cos(p.theta) - dy45 * sin(p.theta);
+    // double gdY = dx45 * sin(p.theta) + dy45 * cos(p.theta);
+
+    // p.x += gdX;
+    // p.y += gdY;
+    // p.theta = curT;
+
+    // lastX = curX;
+    // lastY = curY;
     double curX = x.position(degrees);
     double curY = y.position(degrees);
-    // X,Y增量
     double dX = curX - lastX;
     double dY = curY - lastY;
-    // 转换为45度方向,cos，sin传入弧度值，非角度值
+
+    // 获取当前IMU航向（这个时刻的）
+    double current_theta = IMU.rotation(degrees) * M_PI / 180.0;
+
+    // 使用平均航向（更准确）
+    double avg_theta = (p.theta + current_theta) / 2.0;
+
+    // 45度编码器转换（保持不变）
     double dx45 =
         ((dX * cos(M_PI / 4) - dY * sin(M_PI / 4)) / _tpr) * (2 * M_PI * _r);
     double dy45 =
         ((dX * sin(M_PI / 4) + dY * cos(M_PI / 4)) / _tpr) * (2 * M_PI * _r);
-    // 度转弧
-    double curT = IMU.rotation(degrees) * M_PI / 180.0;
-    // 转为场地坐标
-    double gdX = dx45 * cos(p.theta) - dy45 * sin(p.theta);
-    double gdY = dx45 * sin(p.theta) + dy45 * cos(p.theta);
+
+    // 使用平均航向转换到场地坐标
+    double gdX = dx45 * cos(avg_theta) - dy45 * sin(avg_theta);
+    double gdY = dx45 * sin(avg_theta) + dy45 * cos(avg_theta);
 
     p.x += gdX;
     p.y += gdY;
-    p.theta = curT;
+    p.theta = current_theta; // 更新为当前IMU值
 
     lastX = curX;
     lastY = curY;
@@ -149,6 +176,19 @@ int ppc::lookahead(int startI) {
     return _path.size() - 1;
 }
 
+double linearToMotorRPM(double linear_speed) {
+    // 1. 线速度 -> 轮子角速度 (rad/s)
+    double wheel_angular = linear_speed / 1.625; // 轮子r
+
+    // 2. 轮子角速度 -> 轮子转速 (RPM)
+    double wheel_rpm = wheel_angular * 60.0 / (2.0 * M_PI);
+
+    // 3. 考虑齿比得到电机转速
+    double motor_rpm = wheel_rpm * 0.75; // 齿比
+
+    return motor_rpm;
+}
+
 void ppc::control(int i) {
     if (_path.empty())
         return;
@@ -167,29 +207,29 @@ void ppc::control(int i) {
     double dx = d.x;
     double dy = d.y;
 
-    Point dr = Point(dx * cos(-p.theta) - dy * sin(-p.theta),
-                     dx * sin(-p.theta) + dy * cos(-p.theta)); // 机器坐标系误差
+    // Point dr = Point(dx * cos(-p.theta) - dy * sin(-p.theta),
+    //                  dx * sin(-p.theta) + dy * cos(-p.theta)); //
+    //                  机器坐标系误差
 
-    // Point dr45;
-    // dr45.x = dr.x * cos(-M_PI / 4) - dr.y * sin(-M_PI / 4);
-    // dr45.y = dr.x * sin(-M_PI / 4) + dr.y * cos(-M_PI / 4);
+    Point dr = Point(dx * cos(p.theta) + dy * sin(p.theta),
+                     -dx * sin(p.theta) + dy * cos(p.theta)); // 机器坐标系误差
 
     double ddis = Curve::distance(dr, Point(0, 0));
 
-    double k = (ddis > 0.1) ? (2 * dr.x) / (ddis * ddis) : 0; // 曲率
+    double k = (ddis > 0.5) ? -(2 * dr.x) / (ddis * ddis) : 0; // 曲率
 
     double He = normAngle(tH - p.theta);
-    // double Hc = He * _kp;
-    double Hc = 0;
+    double Hc = He * _kp;
+    // double Hc = 0;
 
     double disT = Curve::distance(p.point(), t);
-    double baseV = _min + (_max - _min) * std::min(1.0, disT / 50.0);
+    double baseV = _min + (_max - _min) * std::min(1.0, disT / 5.0);
     if (_backward)
         baseV = -baseV;
 
     // TODO: reverse check
-    double lS = baseV * (1 - k * _width / 2) + Hc;
-    double rS = baseV * (1 + k * _width / 2) - Hc;
+    double lS = linearToMotorRPM(baseV * (1 - k * _width / 2)) + Hc;
+    double rS = linearToMotorRPM(baseV * (1 + k * _width / 2)) - Hc;
 
     lS = clamp(lS, -_max, _max);
     rS = clamp(rS, -_max, _max);
@@ -198,6 +238,9 @@ void ppc::control(int i) {
     Brain.Screen.print(lS);
     Brain.Screen.setCursor(6, 10);
     Brain.Screen.print(rS);
+    Brain.Screen.setCursor(6, 20);
+    Brain.Screen.print("ddis:%.f", ddis);
+
     // pos lv rv curT
     // Brain.Screen.setCursor(1, 1);
     // Brain.Screen.print("p: %d", p.x);
@@ -208,7 +251,7 @@ void ppc::control(int i) {
     // Brain.Screen.setCursor(2, 20);
     // Brain.Screen.print(dr45.y);
     Brain.Screen.setCursor(3, 1);
-    Brain.Screen.print(normAngle(IMU.heading()));
+    Brain.Screen.print("He:%.4f", He);
     Brain.Screen.setCursor(4, 1);
     Brain.Screen.print(i);
 
@@ -237,7 +280,7 @@ void ppc::run() {
         // Brain.Screen.print(_path[i].x);
         // Brain.Screen.setCursor(9, 10);
         // Brain.Screen.print(_path[i].y);
-        if (isNear(i)) {
+        if (isNear(i, 1.0)) {
             // d::w([this, i]() {
             //     Controller1.Screen.print("isNear(%d)", i);
             //     Controller1.Screen.setCursor(2, 1);
@@ -257,7 +300,7 @@ void ppc::run() {
     }
 
     double _mmax = _max;
-    _max *= 0.5;
+    _max *= 0.2;
     while (!isNear(_path.size() - 1)) {
         update();
         Brain.Screen.setCursor(7, 1);
@@ -267,8 +310,8 @@ void ppc::run() {
     }
     _max = _mmax;
 
-    L.stop();
-    R.stop();
+    L.stop(brake);
+    R.stop(brake);
 }
 
 // WARNING: Delete in release
